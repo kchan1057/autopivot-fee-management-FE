@@ -1,0 +1,43 @@
+/* 태블릿 (1024px 이하) */
+@media (max-width: 1024px) {
+  :root {
+    --font-md: 16px;
+    --font-lg: 18px;
+    --font-xl: 22px;
+    --font-2xl: 24px;
+  }
+}
+
+/* 모바일 (768px 이하) */
+@media (max-width: 768px) {
+  :root {
+    --spacing-lg: 16px;
+    --spacing-xl: 24px;
+    --font-sm: 14px;
+    --font-md: 16px;
+    --font-lg: 18px;
+    --font-xl: 20px;
+    --font-2xl: 22px;
+  }
+
+  /* 버튼 크기 조정 */
+  .btn--large {
+    min-height: 60px;
+    padding: 16px 24px;
+    font-size: var(--font-md);
+  }
+
+  .btn--medium {
+    min-height: 50px;
+    padding: 12px 20px;
+  }
+}
+
+/* 작은 모바일 (480px 이하) */
+@media (max-width: 480px) {
+  :root {
+    --spacing-md: 12px;
+    --spacing-lg: 16px;
+    --spacing-xl: 20px;
+  }
+}

@@ -1,0 +1,59 @@
+.main-layout {
+  min-height: 100vh;
+  padding-top: var(--header-height);
+}
+
+.main-layout__content {
+  margin-left: var(--sidebar-width);
+  margin-right: calc(var(--summary-panel-width) + var(--spacing-xl));
+  padding: var(--spacing-xl);
+  min-height: calc(100vh - var(--header-height));
+}
+
+/* 햄버거 메뉴 (기본 숨김) */
+.main-layout__hamburger {
+  display: none;
+  position: fixed;
+  top: calc(var(--header-height) + var(--spacing-md));
+  left: var(--spacing-md);
+  z-index: 95;
+  width: 50px;
+  height: 50px;
+  background: var(--primary);
+  color: white;
+  border-radius: 50%;
+  font-size: 24px;
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-fast);
+}
+
+.main-layout__hamburger:hover {
+  transform: scale(1.1);
+  box-shadow: var(--shadow-lg);
+}
+
+.main-layout__hamburger:active {
+  transform: scale(0.95);
+}
+
+/* 반응형 - 1400px 이하 (Summary Panel 숨김) */
+@media (max-width: 1400px) {
+  .main-layout__content {
+    margin-right: var(--spacing-xl);
+  }
+}
+
+/* 반응형 - 1024px 이하 (모바일) */
+@media (max-width: 1024px) {
+  .main-layout__content {
+    margin-left: 0;
+    margin-right: 0;
+    padding: var(--spacing-md);
+  }
+
+  .main-layout__hamburger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
