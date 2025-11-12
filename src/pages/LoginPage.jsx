@@ -9,7 +9,7 @@ const LoginPage = () => {
     if (provider === 'kakao') {
       // 카카오 로그인: 백엔드의 kakao-login 엔드포인트로 리다이렉트
       setLoading(true);
-      window.location.href = 'http://localhost:8081/api/auth/kakao-login';
+      window.location.href = 'https://seongchan-spring.store/api/auth/kakao-login';
     } else if (provider === 'naver') {
       // 네이버는 아직 미구현
       alert('네이버 로그인은 준비 중입니다.');
