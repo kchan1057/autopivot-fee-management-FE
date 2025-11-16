@@ -1,12 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import MainLayout from '../components/layout/MainLayout';
 import Card from '../components/common/Card';
 import Button from '../components/common/Button';
 import './DashboardPage.css';
 
 const DashboardPage = () => {
-  // 임시 데이터 (나중에 API로 대체)
-  const dashboardData = useState({
+  const navigate = useNavigate();
+  const [userName, setUserName] = useState('회원');
+  
+  // ✅ 대괄호 추가!
+  const [dashboardData] = useState({
     summary: {
       paidCount: 8,
       unpaidCount: 2,
@@ -38,6 +42,27 @@ const DashboardPage = () => {
     ]
   });
 
+  // 로그인 체크 및 사용자 이름 추출
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken');
+    
+    if (!token) {
+      alert('로그인이 필요합니다.');
+      navigate('/login');
+      return;
+    }
+
+    // JWT 토큰에서 이름 추출
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      setUserName(payload.name || '회원');
+      console.log('로그인 정보:', payload);
+    } catch (error) {
+      console.error('토큰 파싱 실패:', error);
+      setUserName('회원');
+    }
+  }, [navigate]);
+
   const quickActions = [
     {
       id: 'fees',
@@ -66,7 +91,6 @@ const DashboardPage = () => {
   ];
 
   const handleQuickAction = (path) => {
-    // TODO: 실제 페이지 이동
     alert(`${path} 페이지로 이동합니다. (구현 예정)`);
   };
 
@@ -76,11 +100,11 @@ const DashboardPage = () => {
         {/* 환영 메시지 */}
         <div className="dashboard__header">
           <h2 className="dashboard__greeting">
-            안녕하세요, {localStorage.getItem('userName')}님! 👋
+            안녕하세요, {userName}님! 👋
           </h2>
         </div>
 
-        {/* 이번 달 요약 (큰 카드) */}
+        {/* 이번 달 요약 */}
         <Card className="dashboard__summary-card" padding="large">
           <div className="summary-card__header">
             <h3 className="summary-card__title">💰 이번 달 회비 현황</h3>
