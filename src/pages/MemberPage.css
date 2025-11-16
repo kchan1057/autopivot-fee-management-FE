@@ -1,0 +1,372 @@
+.member-page {
+  min-height: 100vh;
+  background-color: #f5f7fa;
+}
+
+.member-page__container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.member-page__header {
+  margin-bottom: 32px;
+  position: relative;
+}
+
+.back-button {
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 12px 24px;
+  background: white;
+  border: 2px solid #667eea;
+  color: #667eea;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.back-button:hover {
+  background: #667eea;
+  color: white;
+}
+
+.member-page__title {
+  color: #667eea;
+  font-size: 36px;
+  margin: 0 0 8px 0;
+  text-align: center;
+}
+
+.member-page__subtitle {
+  color: #666;
+  font-size: 16px;
+  margin: 0;
+  text-align: center;
+}
+
+/* 메인 컨텐츠 영역: 왼쪽(리스트) + 오른쪽(업로드) */
+.member-page__content {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 24px;
+}
+
+/* 왼쪽: 멤버 리스트 */
+.member-list-main {
+  flex: 1;
+}
+
+.section-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 16px 0;
+  padding-bottom: 12px;
+  border-bottom: 3px solid #667eea;
+}
+
+.member-table-wrapper {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-bottom: 24px;
+}
+
+.member-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.member-table thead {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.member-table th {
+  padding: 16px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.member-table td {
+  padding: 16px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+}
+
+.member-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.member-table tbody tr.paid {
+  background-color: #f0fff4;
+}
+
+.member-table tbody tr.unpaid {
+  background-color: #fff5f5;
+}
+
+.member-name {
+  font-weight: 600;
+  color: #333;
+}
+
+.member-amount {
+  font-weight: 600;
+  color: #667eea;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.status-paid {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-unpaid {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+/* 통계 카드 */
+.stats-section {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px !important;
+}
+
+.stat-icon {
+  font-size: 40px;
+}
+
+.stat-content {
+  flex: 1;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #333;
+}
+
+/* 오른쪽: 업로드 사이드바 */
+.upload-sidebar {
+  width: 320px;
+}
+
+.upload-card-mini {
+  padding: 24px !important;
+  position: sticky;
+  top: 20px;
+}
+
+.upload-card-mini__title {
+  font-size: 18px;
+  color: #333;
+  margin: 0 0 16px 0;
+  font-weight: 700;
+}
+
+.upload-area-mini {
+  margin-bottom: 16px;
+}
+
+.file-input {
+  display: none;
+}
+
+.file-label-mini {
+  display: block;
+  padding: 20px;
+  background: #f5f7fa;
+  border: 2px dashed #667eea;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.file-label-mini:hover {
+  background: #e8ebf5;
+  border-color: #764ba2;
+}
+
+.file-icon-mini {
+  font-size: 40px;
+  margin-bottom: 8px;
+}
+
+.file-text-mini {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  word-break: break-all;
+}
+
+/* 반응형 */
+@media (max-width: 1200px) {
+  .member-page__content {
+    grid-template-columns: 1fr;
+  }
+  
+  .upload-sidebar {
+    width: 100%;
+  }
+  
+  .upload-card-mini {
+    position: static;
+  }
+}
+
+@media (max-width: 768px) {
+  .member-page__title {
+    font-size: 28px;
+  }
+  
+  .back-button {
+    position: static;
+    margin-bottom: 16px;
+    display: block;
+    width: 100%;
+  }
+  
+  .member-table-wrapper {
+    overflow-x: auto;
+  }
+  
+  .member-table {
+    min-width: 600px;
+  }
+  
+  .stats-section {
+    grid-template-columns: 1fr;
+  }
+}
+/* 모달 오버레이 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* 모달 컨텐츠 */
+.modal-content {
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.modal-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 24px 0;
+  text-align: center;
+}
+
+/* 폼 그룹 */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: all 0.2s;
+  box-sizing: border-box;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+/* 모달 버튼들 */
+.modal-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.btn-cancel,
+.btn-submit {
+  flex: 1;
+  padding: 14px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-cancel {
+  background: #f5f5f5;
+  color: #666;
+}
+
+.btn-cancel:hover {
+  background: #e0e0e0;
+}
+
+.btn-submit {
+  background: #667eea;
+  color: white;
+}
+
+.btn-submit:hover {
+  background: #5568d3;
+}
+
+/* 학번 스타일 */
+.member-student-id {
+  font-family: 'Courier New', monospace;
+  color: #667eea;
+  font-weight: 600;
+}
