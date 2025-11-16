@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Card from '../components/common/Card';
 import Button from '../components/common/Button';
@@ -10,7 +10,16 @@ const GroupSelectPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [userName, setUserName] = useState('회원');
 
-  // JWT에서 사용자 이름 추출
+  // 1. 그룹 선택 핸들러 (useCallback 적용)
+  // - navigate만 의존하여, 컴포넌트 리렌더링 시 함수가 재생성되지 않도록 합니다.
+  const handleSelectGroup = useCallback((groupId) => {
+    // 선택한 그룹 ID를 localStorage에 저장
+    localStorage.setItem('currentGroupId', groupId);
+    // 대시보드로 이동
+    navigate('/dashboard');
+  }, [navigate]);
+
+  // 2. JWT에서 사용자 이름 추출
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
     if (!token) {
@@ -34,7 +43,7 @@ const GroupSelectPage = () => {
     }
   }, [navigate]);
 
-  // 사용자의 그룹 목록 가져오기
+  // 3. 사용자의 그룹 목록 가져오기 (handleSelectGroup 의존성 추가)
   useEffect(() => {
     const fetchGroups = async () => {
       try {
@@ -72,15 +81,7 @@ const GroupSelectPage = () => {
     };
 
     fetchGroups();
-  }, [navigate]);
-
-  // 그룹 선택 핸들러
-  const handleSelectGroup = (groupId) => {
-    // 선택한 그룹 ID를 localStorage에 저장
-    localStorage.setItem('currentGroupId', groupId);
-    // 대시보드로 이동
-    navigate('/dashboard');
-  };
+  }, [navigate, handleSelectGroup]); // 👈 'handleSelectGroup'을 의존성 배열에 포함
 
   // 새 그룹 만들기
   const handleCreateNewGroup = () => {
