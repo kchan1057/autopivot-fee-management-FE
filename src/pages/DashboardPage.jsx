@@ -8,91 +8,41 @@ import './DashboardPage.css';
 const DashboardPage = () => {
   const navigate = useNavigate();
   
-  const [userName, setUserName] = useState('회원');
-  const [dashboardData, setDashboardData] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  // JWT 파싱 및 사용자 이름 설정
-  useEffect(() => {
-    const token = localStorage.getItem('accessToken');
-    
-    if (!token) {
-      alert('로그인이 필요합니다.');
-      navigate('/login');
-      return;
-    }
-
-    try {
-      const base64Url = token.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const decodedAscii = atob(base64);
-      const utf8String = decodeURIComponent(
-        Array.prototype.map.call(decodedAscii, (c) => {
-          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join('')
-      );
-      const payload = JSON.parse(utf8String);
-      
-      setUserName(payload.name || '회원');
-    } catch (error) {
-      console.error('토큰 파싱/인코딩 실패:', error);
-      setUserName('회원');
-    }
-  }, [navigate]);
-
-  // API 통신: 대시보드 데이터를 백엔드에서 가져오기
-  useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        setIsLoading(true);
-        
-        // 현재 선택된 그룹 ID 가져오기
-        const groupId = localStorage.getItem('currentGroupId');
-        
-        if (!groupId) {
-          // 그룹 ID가 없으면 그룹 선택 페이지로
-          navigate('/select-group');
-          return;
-        }
-        
-        // ⭐ 그룹 ID를 포함하여 API 호출
-        const response = await fetch(`https://seongchan-spring.store/api/dashboard?groupId=${groupId}`, {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-          }
-        });
-
-        if (!response.ok) {
-          throw new Error('대시보드 데이터를 가져오는데 실패했습니다.');
-        }
-
-        const data = await response.json();
-        setDashboardData(data);
-      } catch (error) {
-        console.error('데이터 로딩 오류:', error);
-        alert('대시보드 데이터를 불러오는데 실패했습니다.');
-        // 에러 발생 시 그룹 선택 페이지로 이동
-        navigate('/select-group');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    // 토큰이 있을 때만 데이터 로드 실행
-    if (localStorage.getItem('accessToken')) {
-      fetchDashboardData();
-    }
-  }, [navigate]);
-
-  // 로딩 상태 처리
-  if (isLoading || !dashboardData) {
-    return (
-      <MainLayout>
-        <div className="loading-spinner">데이터를 불러오는 중입니다...</div>
-      </MainLayout>
-    );
-  }
+  const [userName, setUserName] = useState('정주훤');
   
+  // 🔥 더미 데이터 (백엔드 없이 테스트용)
+  const [dashboardData] = useState({
+    summary: {
+      paidCount: 8,
+      unpaidCount: 2,
+      totalAmount: 300000,
+      unpaidMembers: ['박민수', '최수진']
+    },
+    recentActivities: [
+      {
+        id: 1,
+        type: 'payment',
+        message: '이영희님 회비 납부 완료',
+        time: '2024.11.05 오후 3시',
+        icon: '✅'
+      },
+      {
+        id: 2,
+        type: 'member',
+        message: '새 멤버 김영수님 등록됨',
+        time: '2024.11.04 오전 10시',
+        icon: '👤'
+      },
+      {
+        id: 3,
+        type: 'notice',
+        message: '11월 회비 납부 안내 공지',
+        time: '2024.11.01 오전 9시',
+        icon: '📢'
+      }
+    ]
+  });
+
   const quickActions = [
     {
       id: 'fees',
@@ -121,7 +71,7 @@ const DashboardPage = () => {
   ];
 
   const handleQuickAction = (path) => {
-    navigate(path);
+    alert(`${path} 페이지로 이동 (준비 중)`);
   };
 
   return (
