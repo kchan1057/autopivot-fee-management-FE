@@ -23,11 +23,11 @@ const CreateGroupPage = () => {
 
   // 카테고리 옵션
   const categories = [
-    { value: 'club', label: '🎯 동아리' },
-    { value: 'study', label: '📚 스터디' },
-    { value: 'social', label: '🎉 친목회' },
-    { value: 'project', label: '💼 프로젝트' },
-    { value: 'etc', label: '📌 기타' }
+    { value: 'CLUB', label: '동아리' },
+    { value: 'STUDY', label: '스터디' },
+    { value: 'SOCIAL_GATHERING', label: '친목회' },
+    { value: 'PROJECT', label: '프로젝트' },
+    { value: 'OTHER', label: '기타' }
   ];
 
   // 엑셀 파일 선택 핸들러
@@ -121,10 +121,10 @@ const CreateGroupPage = () => {
 
       const result = await response.json();
       
-      alert('그룹이 성공적으로 생성되었습니다! 🎉');
+      alert('그룹이 성공적으로 생성되었습니다!');
       
       // 생성된 그룹 ID를 localStorage에 저장 (선택사항)
-      localStorage.setItem('currentGroupId', result.groupId);
+      localStorage.setItem('currentGroupId', result.Id);
       
       // 대시보드로 이동
       navigate('/dashboard');
@@ -143,7 +143,7 @@ const CreateGroupPage = () => {
         {/* 헤더 */}
         <div className="create-group-header">
           <h1 className="create-group-title">
-            {currentStep === 1 ? '🎯 새로운 그룹 만들기' : '👥 멤버 정보 추가'}
+            {currentStep === 1 ? '새로운 그룹 만들기' : '멤버 정보 추가'}
           </h1>
           <p className="create-group-subtitle">
             {currentStep === 1 
