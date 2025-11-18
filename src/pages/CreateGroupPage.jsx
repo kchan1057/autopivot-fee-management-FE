@@ -92,9 +92,9 @@ const CreateGroupPage = () => {
       // 그룹 기본 정보
       const groupData = {
         groupName: groupName.trim(),
-        groupDescription: groupDescription.trim(),
-        monthlyFee: parseInt(monthlyFee),
-        category
+        description: description.trim(),
+        fee: parseInt(fee),
+        groupCategory
       };
       
       formData.append('groupData', new Blob([JSON.stringify(groupData)], {
@@ -194,7 +194,7 @@ const CreateGroupPage = () => {
                     <textarea
                       className="form-textarea"
                       placeholder="그룹에 대한 간단한 설명을 입력해주세요"
-                      value={groupDescription}
+                      value={description}
                       onChange={(e) => setGroupDescription(e.target.value)}
                       maxLength={200}
                       rows={4}
@@ -230,7 +230,7 @@ const CreateGroupPage = () => {
                         type="number"
                         className="form-input"
                         placeholder="10000"
-                        value={monthlyFee}
+                        value={fee}
                         onChange={(e) => setMonthlyFee(e.target.value)}
                         min="0"
                         step="1000"
