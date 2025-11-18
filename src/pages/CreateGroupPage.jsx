@@ -94,7 +94,6 @@ const CreateGroupPage = () => {
         groupName: groupName.trim(),
         groupDescription: groupDescription.trim(),
         monthlyFee: parseInt(monthlyFee),
-        paymentDay: parseInt(paymentDay),
         category
       };
       
