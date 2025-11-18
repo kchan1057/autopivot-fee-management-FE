@@ -49,8 +49,8 @@ const GroupSelectPage = () => {
       try {
         setIsLoading(true);
         
-        // ⭐ Spring API 엔드포인트
-        const response = await fetch('https://seongchan-spring.store/api/user/groups', {
+        //Spring API 엔드포인트
+        const response = await fetch('https://seongchan-spring.store/api/groups/my', {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
@@ -82,7 +82,7 @@ const GroupSelectPage = () => {
     };
 
     fetchGroups();
-  }, [navigate, handleSelectGroup]); // 👈 'handleSelectGroup'을 의존성 배열에 포함
+  }, [navigate, handleSelectGroup]);
 
   // 새 그룹 만들기
   const handleCreateNewGroup = () => {
