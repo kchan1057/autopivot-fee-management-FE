@@ -11,7 +11,6 @@ const CreateGroupPage = () => {
   const [groupName, setGroupName] = useState('');
   const [groupDescription, setGroupDescription] = useState('');
   const [monthlyFee, setMonthlyFee] = useState('');
-  const [paymentDay, setPaymentDay] = useState('1');
   const [category, setCategory] = useState('');
   
   // 엑셀 파일 관련
