@@ -10,14 +10,12 @@ const GroupSelectPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [userName, setUserName] = useState('회원');
 
-  // 1. 그룹 선택 핸들러
   const handleSelectGroup = useCallback((groupId) => {
     console.log('선택한 그룹 ID:', groupId);
     localStorage.setItem('currentGroupId', groupId);
     navigate('/dashboard');
   }, [navigate]);
 
-  // 2. JWT에서 사용자 이름 추출
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
     if (!token) {
@@ -42,7 +40,6 @@ const GroupSelectPage = () => {
     }
   }, [navigate]);
 
-  // 3. 사용자의 그룹 목록 가져오기
   useEffect(() => {
     const fetchGroups = async () => {
       try {
@@ -64,12 +61,10 @@ const GroupSelectPage = () => {
         
         setGroups(data);
         
-        // ✅ 그룹이 없으면 그룹 만들기 페이지로
         if (data.length === 0) {
           alert('아직 가입된 그룹이 없습니다. 그룹을 만들어주세요!');
           navigate('/create-group');
         }
-        // ✅ 그룹이 1개 이상이어도 선택 페이지에 머무름 (자동 이동 안 함!)
         
       } catch (error) {
         console.error('그룹 목록 로딩 오류:', error);
@@ -80,15 +75,13 @@ const GroupSelectPage = () => {
     };
 
     fetchGroups();
-  }, [navigate]); // ✅ handleSelectGroup 의존성 제거
+  }, [navigate]);
 
-  // 4. 새 그룹 만들기
   const handleCreateNewGroup = () => {
     console.log('새 그룹 만들기 버튼 클릭');
     navigate('/create-group');
   };
 
-  // 5. 카테고리별 아이콘
   const getCategoryIcon = (category) => {
     const icons = {
       'CLUB': '🎯',
@@ -100,7 +93,6 @@ const GroupSelectPage = () => {
     return icons[category] || '📌';
   };
 
-  // 6. 카테고리별 배경 색상
   const getCategoryColor = (category) => {
     const colors = {
       'CLUB': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -112,7 +104,6 @@ const GroupSelectPage = () => {
     return colors[category] || colors['OTHER'];
   };
 
-  // 7. 카테고리 한글 이름
   const getCategoryLabel = (category) => {
     const labels = {
       'CLUB': '동아리',
@@ -138,7 +129,6 @@ const GroupSelectPage = () => {
   return (
     <div className="group-select-page">
       <div className="group-select-container">
-        {/* 헤더 */}
         <div className="group-select-header">
           <h1 className="group-select-title">
             환영합니다, {userName}님! 👋
@@ -150,30 +140,29 @@ const GroupSelectPage = () => {
           </p>
         </div>
 
-        {/* 그룹 목록 */}
         <div className="groups-grid">
           {groups.map((group) => (
             <Card
-              key={group.groupId}  // ✅ id → groupId
+              key={group.groupId}
               className="group-card"
               hover={true}
-              onClick={() => handleSelectGroup(group.groupId)}  // ✅ id → groupId
+              onClick={() => handleSelectGroup(group.groupId)}
             >
               <div 
                 className="group-card__header"
-                style={{ background: getCategoryColor(group.groupCategory) }}  // ✅ category → groupCategory
+                style={{ background: getCategoryColor(group.groupCategory) }}
               >
                 <div className="group-card__icon">
-                  {getCategoryIcon(group.groupCategory)}  // ✅ category → groupCategory
+                  {getCategoryIcon(group.groupCategory)}
                 </div>
                 <div className="group-card__badge">
-                  {getCategoryLabel(group.groupCategory)}  // ✅ 카테고리 라벨 표시
+                  {getCategoryLabel(group.groupCategory)}
                 </div>
               </div>
 
               <div className="group-card__body">
                 <h3 className="group-card__name">{group.groupName}</h3>
-                {group.description && (  // ✅ groupDescription → description
+                {group.description && (
                   <p className="group-card__description">
                     {group.description}
                   </p>
@@ -184,7 +173,7 @@ const GroupSelectPage = () => {
                     <span className="stat-icon">💰</span>
                     <span className="stat-label">월 회비</span>
                     <span className="stat-value">
-                      {group.fee?.toLocaleString() || 0}원  {/* ✅ monthlyFee → fee */}
+                      {group.fee?.toLocaleString() || 0}원
                     </span>
                   </div>
                 </div>
@@ -192,7 +181,6 @@ const GroupSelectPage = () => {
             </Card>
           ))}
 
-          {/* 새 그룹 만들기 카드 */}
           <Card
             className="group-card group-card--create"
             hover={true}
@@ -208,7 +196,6 @@ const GroupSelectPage = () => {
           </Card>
         </div>
 
-        {/* 로그아웃 버튼 */}
         <div className="group-select-footer">
           <Button
             variant="secondary"
