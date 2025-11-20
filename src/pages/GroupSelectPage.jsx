@@ -39,7 +39,6 @@ const GroupSelectPage = () => {
       const payload = JSON.parse(utf8String);
       
       setUserName(payload.name || '회원');
-      console.log('✅ 사용자 이름:', payload.name);
     } catch (error) {
       console.error('❌ 토큰 파싱 실패:', error);
       setUserName('회원');
@@ -64,8 +63,6 @@ const GroupSelectPage = () => {
         }
 
         const data = await response.json();
-        console.log('✅ 가져온 그룹 목록:', data);
-        
         setGroups(data);
         
         // 그룹이 없으면 그룹 생성 페이지로 이동
@@ -77,7 +74,6 @@ const GroupSelectPage = () => {
         
       } catch (error) {
         console.error('❌ 그룹 목록 로딩 오류:', error);
-        alert('그룹 목록을 불러오는데 실패했습니다.');
       } finally {
         setIsLoading(false);
       }
@@ -88,40 +84,40 @@ const GroupSelectPage = () => {
 
   // ✅ 새 그룹 만들기
   const handleCreateNewGroup = () => {
-    console.log('➕ 새 그룹 만들기 버튼 클릭');
     navigate('/create-group');
   };
 
   // ✅ 로그아웃
   const handleLogout = () => {
-    console.log('👋 로그아웃 버튼 클릭');
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('currentGroupId');
-    navigate('/login');
+    if (window.confirm('정말 로그아웃 하시겠습니까?')) {
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('currentGroupId');
+      navigate('/login');
+    }
   };
 
   // 카테고리별 아이콘
   const getCategoryIcon = (category) => {
     const icons = {
-      'CLUB': '🎯',
+      'CLUB': '🏀',
       'STUDY': '📚',
-      'SOCIAL_GATHERING': '🎉',
-      'PROJECT': '💼',
-      'OTHER': '📌'
+      'SOCIAL_GATHERING': '🍺',
+      'PROJECT': '💻',
+      'OTHER': '✨'
     };
     return icons[category] || '📌';
   };
 
-  // 카테고리별 배경 그라디언트
+  // 카테고리별 배경 그라디언트 (파스텔 톤으로 부드럽게)
   const getCategoryColor = (category) => {
     const colors = {
-      'CLUB': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      'STUDY': 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-      'SOCIAL_GATHERING': 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-      'PROJECT': 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-      'OTHER': 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)'
+      'CLUB': 'linear-gradient(135deg, #bfdbfe 0%, #60a5fa 100%)', // 블루
+      'STUDY': 'linear-gradient(135deg, #e9d5ff 0%, #c084fc 100%)', // 퍼플
+      'SOCIAL_GATHERING': 'linear-gradient(135deg, #bbf7d0 0%, #4ade80 100%)', // 그린
+      'PROJECT': 'linear-gradient(135deg, #fecaca 0%, #f87171 100%)', // 레드
+      'OTHER': 'linear-gradient(135deg, #fed7aa 0%, #fb923c 100%)'  // 오렌지
     };
-    return colors[category] || colors['OTHER'];
+    return colors[category] || 'linear-gradient(135deg, #e2e8f0 0%, #94a3b8 100%)';
   };
 
   // 카테고리 한글 이름
@@ -142,7 +138,7 @@ const GroupSelectPage = () => {
       <div className="group-select-page">
         <div className="loading-container">
           <div className="loading-spinner"></div>
-          <p className="loading-text">그룹 정보를 불러오는 중...</p>
+          <p style={{ color: '#64748b', fontWeight: 600 }}>그룹 정보를 불러오는 중...</p>
         </div>
       </div>
     );
@@ -151,20 +147,22 @@ const GroupSelectPage = () => {
   return (
     <div className="group-select-page">
       <div className="group-select-container">
-        {/* 헤더 */}
+        
+        {/* 헤더 영역 */}
         <div className="group-select-header">
           <h1 className="group-select-title">
-            환영합니다, {userName}님! 👋
+            반가워요, {userName}님! 👋
           </h1>
           <p className="group-select-subtitle">
             {groups.length > 0 
-              ? '어떤 그룹으로 들어가시겠어요?' 
-              : '새로운 그룹을 만들어보세요!'}
+              ? '오늘은 어떤 모임 활동을 시작할까요?' 
+              : '아직 모임이 없네요. 첫 그룹을 만들어보세요!'}
           </p>
         </div>
 
         {/* 그룹 카드 그리드 */}
         <div className="groups-grid">
+          {/* 기존 그룹 리스트 */}
           {groups.map((group) => (
             <Card
               key={group.groupId}
@@ -172,6 +170,7 @@ const GroupSelectPage = () => {
               hover={true}
               onClick={() => handleSelectGroup(group.groupId)}
             >
+              {/* 카드 상단: 카테고리 색상 배경 */}
               <div 
                 className="group-card__header"
                 style={{ background: getCategoryColor(group.groupCategory) }}
@@ -184,28 +183,26 @@ const GroupSelectPage = () => {
                 </div>
               </div>
 
+              {/* 카드 하단: 정보 */}
               <div className="group-card__body">
                 <h3 className="group-card__name">{group.groupName}</h3>
-                {group.description && (
-                  <p className="group-card__description">
-                    {group.description}
-                  </p>
-                )}
+                <p className="group-card__description">
+                  {group.description || '설명이 없는 그룹입니다.'}
+                </p>
 
-                <div className="group-card__stats">
-                  <div className="stat-item">
-                    <span className="stat-icon">💰</span>
-                    <span className="stat-label">월 회비</span>
-                    <span className="stat-value">
-                      {group.fee?.toLocaleString() || 0}원
-                    </span>
-                  </div>
+                {/* 통계 요약 (아이콘으로 심플하게) */}
+                <div className="stat-item">
+                  <span style={{ fontSize: '18px' }}>💰</span>
+                  <span style={{ color: '#64748b', fontSize: '14px' }}>월 회비</span>
+                  <span className="stat-value" style={{ marginLeft: 'auto' }}>
+                    {group.fee?.toLocaleString() || 0}원
+                  </span>
                 </div>
               </div>
             </Card>
           ))}
 
-          {/* 새 그룹 만들기 카드 */}
+          {/* 새 그룹 만들기 카드 (항상 마지막에 표시) */}
           <Card
             className="group-card group-card--create"
             hover={true}
@@ -214,19 +211,26 @@ const GroupSelectPage = () => {
             <div className="create-group-content">
               <div className="create-group-icon">➕</div>
               <h3 className="create-group-title">새 그룹 만들기</h3>
-              <p className="create-group-description">
-                새로운 회비 관리 그룹을<br />시작해보세요!
+              <p style={{ fontSize: '14px', lineHeight: '1.5', opacity: 0.8 }}>
+                새로운 모임을 시작하고<br />
+                회비 관리를 자동화하세요!
               </p>
             </div>
           </Card>
         </div>
 
-        {/* 로그아웃 버튼 */}
+        {/* 하단 로그아웃 버튼 */}
         <div className="group-select-footer">
           <Button
             variant="secondary"
             size="medium"
             onClick={handleLogout}
+            style={{ 
+              background: 'rgba(255,255,255,0.5)', 
+              border: '1px solid white',
+              borderRadius: '20px',
+              padding: '10px 24px'
+            }}
           >
             로그아웃
           </Button>

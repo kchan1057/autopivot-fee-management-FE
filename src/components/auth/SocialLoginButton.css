@@ -1,34 +1,55 @@
-/* src/components/auth/SocialLoginButton.css */
-.social-login-btn-image {
+/* 버튼 껍데기 (투명하게 설정) */
+.social-img-btn {
   width: 100%;
-  max-width: 400px;  /* 최대 너비 제한 (선택사항) */
   padding: 0;
-  margin: 0 auto 12px auto;  /* 가운데 정렬 + 하단 간격 */
   border: none;
-  background: none;
+  background: none; /* 배경 투명 */
   cursor: pointer;
-  transition: transform 0.2s ease, opacity 0.2s ease;
-  display: block;
+  
+  /* 중앙 정렬 및 배치 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+  /* 애니메이션 부드럽게 */
+  transition: transform 0.2s ease, filter 0.2s ease, opacity 0.2s;
+  
+  /* 버튼 사이 간격 */
+  margin-bottom: 12px;
+  
+  /* 💡 중요: 버튼 영역 자체에 그림자와 둥근 모서리를 줍니다 */
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+  overflow: hidden; /* 이미지가 둥근 모서리를 빠져나가지 않게 */
 }
 
-.social-login-btn-image:hover:not(:disabled) {
-  transform: scale(1.02);
-  opacity: 0.9;
-}
-
-.social-login-btn-image:active:not(:disabled) {
-  transform: scale(0.98);
-}
-
-.social-login-btn-image:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.social-login-btn-image img {
+/* 내부 이미지 스타일 - 여기가 핵심입니다 */
+.social-img-btn img {
   width: 100%;
-  height: 50px;  /* 고정 높이로 통일 */
-  object-fit: cover;  /* 이미지 비율 유지하며 영역에 맞춤 */
-  display: block;
-  border-radius: 8px;  /* 둥근 모서리 (선택사항) */
+  height: 54px; /* 💡 두 버튼의 높이를 54px로 강제 통일 */
+  
+  /* 💡 핵심: 비율이 다른 이미지를 영역에 꽉 채우고, 넘치는 부분은 잘라냅니다 */
+  object-fit: cover; 
+  
+  display: block; /* 이미지 하단 미세한 여백 제거 */
+}
+
+/* 마우스 올렸을 때: 살짝 떠오름 */
+.social-img-btn:hover:not(:disabled) {
+  transform: translateY(-3px); /* 위로 3px 부양 */
+  filter: brightness(1.03);    /* 아주 살짝 밝게 */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12); /* 그림자도 같이 부양 */
+}
+
+/* 클릭했을 때: 살짝 눌림 */
+.social-img-btn:active:not(:disabled) {
+  transform: scale(0.98); /* 사이즈 살짝 축소 */
+  filter: brightness(0.95);
+}
+
+/* 비활성화 (로딩 중일 때) */
+.social-img-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
 }

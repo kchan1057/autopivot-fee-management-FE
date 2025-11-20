@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Card from '../components/common/Card';
-import Button from '../components/common/Button';
+import Button from '../components/common/Button'; // 버튼은 유지 (스타일은 CSS로 제어 가능)
 import './CreateGroupPage.css';
 
 const CreateGroupPage = () => {
   const navigate = useNavigate();
   
-  // 그룹 기본 정보 (백엔드 DTO와 동일하게)
+  // 그룹 기본 정보
   const [groupName, setGroupName] = useState('');
-  const [accountName, setAccountName] = useState('');  // ✅ 추가!
+  const [accountName, setAccountName] = useState('');
   const [description, setDescription] = useState('');
   const [fee, setFee] = useState('');
   const [groupCategory, setGroupCategory] = useState('');
@@ -23,20 +22,18 @@ const CreateGroupPage = () => {
   const [currentStep, setCurrentStep] = useState(1);
 
   const groupCategories = [
-    { value: 'CLUB', label: '동아리' },
-    { value: 'STUDY', label: '스터디' },
-    { value: 'SOCIAL_GATHERING', label: '친목회' },
-    { value: 'PROJECT', label: '프로젝트' },
-    { value: 'OTHER', label: '기타' }
+    { value: 'CLUB', label: '🏀 동아리' }, // 아이콘 살짝 추가해서 예쁘게
+    { value: 'STUDY', label: '📚 스터디' },
+    { value: 'SOCIAL_GATHERING', label: '🍺 친목회' },
+    { value: 'PROJECT', label: '💻 프로젝트' },
+    { value: 'OTHER', label: '✨ 기타' }
   ];
 
-  // ✅ accountName 자동 생성 함수 추가
   const generateAccountName = (name) => {
     if (!name.trim()) return '';
     return `${name.trim()} 모임 통장`;
   };
 
-  // ✅ 그룹명 변경 시 통장 이름도 자동 생성
   const handleGroupNameChange = (e) => {
     const name = e.target.value;
     setGroupName(name);
@@ -56,7 +53,6 @@ const CreateGroupPage = () => {
     }
   };
 
-  // 1단계 검증 (✅ accountName 추가)
   const validateStep1 = () => {
     if (!groupName.trim()) {
       alert('그룹명을 입력해주세요.');
@@ -101,10 +97,9 @@ const CreateGroupPage = () => {
       
       const formData = new FormData();
       
-      // ✅ accountName 추가
       const groupData = {
         groupName: groupName.trim(),
-        accountName: accountName.trim(),  // ✅ 추가!
+        accountName: accountName.trim(),
         description: description.trim(),
         fee: parseInt(fee),
         groupCategory
@@ -135,7 +130,6 @@ const CreateGroupPage = () => {
       
       alert('그룹이 성공적으로 생성되었습니다!');
       
-      // ✅ groupId 필드명 확인 (백엔드에서 id로 올 수도 있음)
       if (result.groupId || result.id) {
         localStorage.setItem('currentGroupId', result.groupId || result.id);
       }
@@ -152,19 +146,23 @@ const CreateGroupPage = () => {
 
   return (
     <div className="create-group-page">
-      <div className="create-group-container">
+      {/* 유리 카드 컨테이너 시작 (이 안에 모든 내용이 들어갑니다) */}
+      <div className="create-group-glass-panel">
+        
+        {/* 헤더 */}
         <div className="create-group-header">
           <h1 className="create-group-title">
-            {currentStep === 1 ? '새로운 그룹 만들기' : '멤버 정보 추가'}
+            {currentStep === 1 ? '그룹 만들기' : '멤버 초대하기'}
           </h1>
           <p className="create-group-subtitle">
             {currentStep === 1 
-              ? '회비를 관리할 그룹의 기본 정보를 입력해주세요'
-              : '멤버를 추가하는 방법을 선택해주세요'
+              ? '모임 관리를 위한 기본 정보를 알려주세요.'
+              : '함께할 멤버들을 어떻게 추가할까요?'
             }
           </p>
         </div>
 
+        {/* 진행 단계 (Progress Bar) */}
         <div className="progress-steps">
           <div className={`progress-step ${currentStep >= 1 ? 'active' : ''}`}>
             <div className="progress-step-number">1</div>
@@ -180,91 +178,85 @@ const CreateGroupPage = () => {
         <form onSubmit={handleSubmit}>
           {currentStep === 1 && (
             <div className="form-step">
-              <Card className="form-card" padding="large">
-                <div className="form-section">
-                  <h3 className="form-section-title">📝 그룹 기본 정보</h3>
-                  
-                  {/* 그룹명 */}
-                  <div className="form-group">
-                    <label className="form-label required">그룹명</label>
-                    <input
-                      type="text"
-                      className="form-input"
-                      placeholder="예: ICON, 테니스 동호회"
-                      value={groupName}
-                      onChange={handleGroupNameChange}  // ✅ 수정
-                      maxLength={50}
-                    />
-                    <span className="form-hint">최대 50자</span>
-                  </div>
-
-                  {/* ✅ 통장 이름 추가 */}
-                  <div className="form-group">
-                    <label className="form-label required">통장 이름</label>
-                    <input
-                      type="text"
-                      className="form-input"
-                      placeholder="예: ICON 모임 통장"
-                      value={accountName}
-                      onChange={(e) => setAccountName(e.target.value)}
-                      maxLength={100}
-                    />
-                    <span className="form-hint">
-                      💡 입금 알림에 표시되는 통장 이름을 입력하세요 (자동 입력됨)
-                    </span>
-                  </div>
-
-                  {/* 그룹 설명 */}
-                  <div className="form-group">
-                    <label className="form-label">그룹 설명 (선택)</label>
-                    <textarea
-                      className="form-textarea"
-                      placeholder="그룹에 대한 간단한 설명을 입력해주세요"
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      maxLength={200}
-                      rows={4}
-                    />
-                    <span className="form-hint">최대 200자</span>
-                  </div>
-
-                  {/* 카테고리 */}
-                  <div className="form-group">
-                    <label className="form-label required">그룹 카테고리</label>
-                    <div className="category-grid">
-                      {groupCategories.map((cat) => (
-                        <div
-                          key={cat.value}
-                          className={`category-option ${groupCategory === cat.value ? 'selected' : ''}`}
-                          onClick={() => setGroupCategory(cat.value)}
-                        >
-                          {cat.label}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+              
+              {/* 섹션 1: 기본 정보 */}
+              <div className="form-section">
+                <h3 className="form-section-title">📝 기본 정보</h3>
+                
+                <div className="form-group">
+                  <label className="form-label required">그룹명</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    placeholder="예: 2024 독서 모임"
+                    value={groupName}
+                    onChange={handleGroupNameChange}
+                    maxLength={50}
+                  />
                 </div>
 
-                <div className="form-section">
-                  <h3 className="form-section-title">💰 회비 정보</h3>
-                  
-                  <div className="form-group">
-                    <label className="form-label required">월 회비 금액</label>
-                    <div className="input-with-unit">
-                      <input
-                        type="number"
-                        className="form-input"
-                        placeholder="10000"
-                        value={fee}
-                        onChange={(e) => setFee(e.target.value)}
-                        min="0"
-                        step="1000"
-                      />
-                      <span className="input-unit">원</span>
-                    </div>
+                <div className="form-group">
+                  <label className="form-label required">통장 이름</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    placeholder="자동으로 입력됩니다"
+                    value={accountName}
+                    onChange={(e) => setAccountName(e.target.value)}
+                    maxLength={100}
+                    readOnly={!accountName} // 자동 생성이므로 사용자가 수정 못하게 해도 좋지만, 일단 수정 가능하게 둠
+                  />
+                  <span className="form-hint">💡 입금 확인 시 표시될 통장 이름입니다.</span>
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">설명 (선택)</label>
+                  <textarea
+                    className="form-textarea"
+                    placeholder="어떤 모임인지 간단하게 소개해주세요."
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    maxLength={200}
+                    rows={3}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label required">카테고리</label>
+                  <div className="category-grid">
+                    {groupCategories.map((cat) => (
+                      <div
+                        key={cat.value}
+                        className={`category-option ${groupCategory === cat.value ? 'selected' : ''}`}
+                        onClick={() => setGroupCategory(cat.value)}
+                      >
+                        {cat.label}
+                      </div>
+                    ))}
                   </div>
                 </div>
-              </Card>
+              </div>
+
+              {/* 섹션 2: 회비 정보 */}
+              <div className="form-section">
+                <h3 className="form-section-title">💰 회비 설정</h3>
+                
+                <div className="form-group">
+                  <label className="form-label required">월 회비</label>
+                  <div className="input-with-unit">
+                    <input
+                      type="number"
+                      className="form-input"
+                      placeholder="0"
+                      value={fee}
+                      onChange={(e) => setFee(e.target.value)}
+                      min="0"
+                      step="1000"
+                    />
+                    <span className="input-unit">원</span>
+                  </div>
+                </div>
+              </div>
 
               <div className="form-actions">
                 <Button
@@ -273,109 +265,82 @@ const CreateGroupPage = () => {
                   size="large"
                   onClick={handleNextStep}
                   fullWidth
+                  // 기존 Button 컴포넌트 스타일이 안 맞으면 style prop으로 강제 조정 가능
+                  style={{ borderRadius: '16px', height: '54px', fontSize: '16px' }} 
                 >
-                  다음 단계로 →
+                  다음으로 계속하기
                 </Button>
               </div>
             </div>
           )}
 
-          {/* Step 2는 동일 */}
+          {/* Step 2 */}
           {currentStep === 2 && (
             <div className="form-step">
-              <Card className="form-card" padding="large">
-                <div className="form-section">
-                  <h3 className="form-section-title">📁 그룹 멤버 엑셀 파일이 있나요?</h3>
-                  <p className="form-description">
-                    엑셀 파일(.xlsx, .xls, .csv)이 있으면 한 번에 멤버를 추가할 수 있어요!
-                    <br />
-                    없어도 괜찮아요. 나중에 하나씩 추가할 수 있습니다.
-                  </p>
+              <div className="form-section">
+                <h3 className="form-section-title">📁 멤버 일괄 추가</h3>
+                <p className="form-hint" style={{ marginBottom: '20px', fontSize: '14px' }}>
+                  엑셀 파일로 멤버를 한 번에 등록할 수 있습니다.<br/>
+                  없으시면 건너뛰고 나중에 추가해도 됩니다.
+                </p>
 
-                  <div className="excel-choice">
-                    <div
-                      className={`choice-card ${hasExcelFile === true ? 'selected' : ''}`}
-                      onClick={() => {
-                        setHasExcelFile(true);
-                        setExcelFile(null);
-                        setFileName('');
-                      }}
-                    >
-                      <div className="choice-icon">📄</div>
-                      <h4 className="choice-title">네, 있어요!</h4>
-                      <p className="choice-description">엑셀 파일로 멤버 추가하기</p>
-                    </div>
-
-                    <div
-                      className={`choice-card ${hasExcelFile === false ? 'selected' : ''}`}
-                      onClick={() => {
-                        setHasExcelFile(false);
-                        setExcelFile(null);
-                        setFileName('');
-                      }}
-                    >
-                      <div className="choice-icon">✋</div>
-                      <h4 className="choice-title">아니요, 없어요</h4>
-                      <p className="choice-description">나중에 멤버 추가할게요</p>
-                    </div>
+                <div className="excel-choice">
+                  <div
+                    className={`choice-card ${hasExcelFile === true ? 'selected' : ''}`}
+                    onClick={() => {
+                      setHasExcelFile(true);
+                      setExcelFile(null);
+                      setFileName('');
+                    }}
+                  >
+                    <span className="choice-icon">📄</span>
+                    <span className="choice-title">파일이 있어요</span>
+                    <span className="choice-description">엑셀/CSV 업로드</span>
                   </div>
 
-                  {hasExcelFile === true && (
-                    <div className="file-upload-section">
-                      <div className="file-upload-info">
-                        <div className="info-icon">💡</div>
-                        <div className="info-content">
-                          <p className="info-title">엑셀 파일 양식 안내</p>
-                          <p className="info-text">
-                            • 첫 번째 행: 이름, 전화번호, 이메일 (헤더)
-                            <br />
-                            • 두 번째 행부터: 멤버 정보 입력
-                            <br />
-                            • 예시: 홍길동 | 010-1234-5678 | hong@example.com
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="file-upload-area">
-                        <input
-                          type="file"
-                          id="excel-file"
-                          className="file-input"
-                          accept=".xlsx,.xls,.csv"
-                          onChange={handleFileChange}
-                        />
-                        <label htmlFor="excel-file" className="file-upload-label">
-                          {fileName ? (
-                            <>
-                              <div className="file-uploaded-icon">✅</div>
-                              <p className="file-name">{fileName}</p>
-                              <p className="file-hint">다른 파일을 선택하려면 클릭하세요</p>
-                            </>
-                          ) : (
-                            <>
-                              <div className="file-upload-icon">📤</div>
-                              <p className="file-upload-text">파일을 선택하거나 여기에 드래그하세요</p>
-                              <p className="file-hint">지원 형식: .xlsx, .xls, .csv</p>
-                            </>
-                          )}
-                        </label>
-                      </div>
-                    </div>
-                  )}
-
-                  {hasExcelFile === false && (
-                    <div className="no-file-info">
-                      <div className="info-icon">✨</div>
-                      <p className="info-title">걱정 마세요!</p>
-                      <p className="info-text">
-                        그룹 생성 후 대시보드에서 언제든지 멤버를 추가할 수 있습니다.
-                        <br />
-                        '멤버 관리' 메뉴에서 하나씩 추가하거나 나중에 엑셀로 일괄 업로드도 가능해요!
-                      </p>
-                    </div>
-                  )}
+                  <div
+                    className={`choice-card ${hasExcelFile === false ? 'selected' : ''}`}
+                    onClick={() => {
+                      setHasExcelFile(false);
+                      setExcelFile(null);
+                      setFileName('');
+                    }}
+                  >
+                    <span className="choice-icon">✋</span>
+                    <span className="choice-title">없어요</span>
+                    <span className="choice-description">나중에 추가할게요</span>
+                  </div>
                 </div>
-              </Card>
+
+                {hasExcelFile === true && (
+                  <div className="file-upload-section">
+                    <div className="file-upload-area">
+                      <input
+                        type="file"
+                        id="excel-file"
+                        className="file-input"
+                        accept=".xlsx,.xls,.csv"
+                        onChange={handleFileChange}
+                      />
+                      <label htmlFor="excel-file" className="file-upload-label">
+                        {fileName ? (
+                          <>
+                            <span className="choice-icon">✅</span>
+                            <p className="file-name">{fileName}</p>
+                            <p className="file-hint">파일을 변경하려면 클릭하세요</p>
+                          </>
+                        ) : (
+                          <>
+                            <span className="choice-icon">📤</span>
+                            <p className="file-upload-text">여기를 클릭해 파일을 업로드하세요</p>
+                            <p className="file-hint">지원 형식: .xlsx, .xls, .csv</p>
+                          </>
+                        )}
+                      </label>
+                    </div>
+                  </div>
+                )}
+              </div>
 
               <div className="form-actions">
                 <Button
@@ -383,18 +348,18 @@ const CreateGroupPage = () => {
                   variant="secondary"
                   size="large"
                   onClick={() => setCurrentStep(1)}
-                  style={{ flex: 1 }}
+                  style={{ flex: 1, borderRadius: '16px', height: '54px' }}
                 >
-                  ← 이전
+                  이전
                 </Button>
                 <Button
                   type="submit"
                   variant="primary"
                   size="large"
                   disabled={isLoading}
-                  style={{ flex: 2 }}
+                  style={{ flex: 2, borderRadius: '16px', height: '54px' }}
                 >
-                  {isLoading ? '생성 중...' : '그룹 만들기 🎉'}
+                  {isLoading ? '생성 중...' : '완료 및 그룹 생성 🎉'}
                 </Button>
               </div>
             </div>

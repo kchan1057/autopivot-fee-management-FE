@@ -1,85 +1,71 @@
-/* src/components/common/Button.css */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-sm);
-  font-weight: 600;
+  gap: 8px;
+  font-weight: 700;
   border: none;
-  border-radius: var(--radius-md);
+  border-radius: 16px; /* 더 둥글게 */
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   font-family: inherit;
   text-decoration: none;
+  position: relative;
+  overflow: hidden;
 }
 
 .btn:disabled {
-  opacity: 0.5;
+  opacity: 0.6;
   cursor: not-allowed;
+  filter: grayscale(1);
 }
 
 /* Sizes */
-.btn-small {
-  padding: 8px 16px;
-  font-size: var(--font-sm);
-}
-
-.btn-medium {
-  padding: 12px 24px;
-  font-size: var(--font-md);
-}
-
-.btn-large {
-  padding: 16px 32px;
-  font-size: var(--font-lg);
-}
+.btn-small { padding: 8px 16px; font-size: 13px; }
+.btn-medium { padding: 12px 24px; font-size: 15px; height: 48px; }
+.btn-large { padding: 16px 32px; font-size: 17px; height: 56px; }
 
 /* Variants */
 .btn-primary {
-  background: var(--primary);
+  background: #3b82f6;
   color: white;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
-
 .btn-primary:hover:not(:disabled) {
-  background: var(--primary-dark);
+  background: #2563eb;
   transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 8px 16px rgba(59, 130, 246, 0.4);
 }
 
 .btn-secondary {
-  background: var(--bg-hover);
-  color: var(--text-dark);
+  background: white;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
 }
-
 .btn-secondary:hover:not(:disabled) {
-  background: #d1d5db;
+  background: #f8fafc;
+  color: #3b82f6;
+  border-color: #3b82f6;
+  transform: translateY(-2px);
 }
 
 .btn-outline {
   background: transparent;
-  border: 2px solid var(--primary);
-  color: var(--primary);
+  border: 2px solid #3b82f6;
+  color: #3b82f6;
 }
-
 .btn-outline:hover:not(:disabled) {
-  background: var(--primary);
-  color: white;
+  background: #eff6ff;
+  transform: translateY(-2px);
 }
 
 .btn-danger {
-  background: var(--error);
-  color: white;
+  background: #fee2e2;
+  color: #ef4444;
 }
-
 .btn-danger:hover:not(:disabled) {
-  background: #dc2626;
+  background: #fecaca;
 }
 
-.btn-full-width {
-  width: 100%;
-}
-
-.btn-icon {
-  display: flex;
-  align-items: center;
-}
+.btn-full-width { width: 100%; }
+.btn-icon { display: flex; font-size: 1.2em; }

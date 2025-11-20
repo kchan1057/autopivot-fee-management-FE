@@ -1,4 +1,3 @@
-// src/components/common/Button.jsx
 import React from 'react';
 import './Button.css';
 
@@ -11,7 +10,8 @@ const Button = ({
   disabled = false,
   fullWidth = false,
   icon,
-  className = ''
+  className = '',
+  ...rest 
 }) => {
   return (
     <button
@@ -19,6 +19,7 @@ const Button = ({
       onClick={onClick}
       disabled={disabled}
       className={`btn btn-${variant} btn-${size} ${fullWidth ? 'btn-full-width' : ''} ${className}`}
+      {...rest} // 👈 버튼에 나머지 속성 전달
     >
       {icon && <span className="btn-icon">{icon}</span>}
       {children}
