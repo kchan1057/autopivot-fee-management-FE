@@ -6,7 +6,7 @@ const ChatBot = ({ isOpen, onClose, groupId }) => {
     {
       id: 1,
       sender: 'bot',
-      text: '안녕하세요! 오토피봇 AI 어시스턴트 총총이입니다. 🤖\n궁금하신 것을 물어보세요!',
+      text: '안녕하세요! 오토피봇 AI 총총이입니다. 🤖\n무엇을 도와드릴까요?',
       timestamp: new Date()
     }
   ]);
@@ -14,23 +14,22 @@ const ChatBot = ({ isOpen, onClose, groupId }) => {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
 
-  // 빠른 질문 버튼
+  // 추천 질문 데이터
   const quickQuestions = [
-    { text: '미납자 알려줘', icon: '📋' },
-    { text: '회비 현황 보여줘', icon: '📊' },
-    { text: '도움말', icon: '💡' }
+    { text: '미납자 현황', icon: '📋' },
+    { text: '이번 달 회비', icon: '💰' },
+    { text: '사용법 안내', icon: '💡' },
+    { text: '공지사항 등록', icon: '📢' }
   ];
 
-  // 메시지 스크롤 자동 이동
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, isLoading]); // isLoading 추가하여 로딩 중에도 스크롤
 
-  // 메시지 전송
   const handleSendMessage = async (text) => {
     if (!text.trim() || isLoading) return;
 
@@ -61,7 +60,7 @@ const ChatBot = ({ isOpen, onClose, groupId }) => {
         }
       );
 
-      if (!response.ok) throw new Error('챗봇 응답 실패');
+      if (!response.ok) throw new Error('Network response was not ok');
 
       const data = await response.json();
 
@@ -69,30 +68,25 @@ const ChatBot = ({ isOpen, onClose, groupId }) => {
         id: Date.now() + 1,
         sender: 'bot',
         text: data.response,
-        type: data.type,
-        data: data.data,
         timestamp: new Date()
       };
 
       setMessages(prev => [...prev, botMessage]);
 
     } catch (error) {
-      console.error('챗봇 오류:', error);
-      
+      console.error('Chatbot Error:', error);
       const errorMessage = {
         id: Date.now() + 1,
         sender: 'bot',
-        text: '죄송합니다. 일시적인 오류가 발생했습니다. 다시 시도해주세요.',
+        text: '죄송합니다. 잠시 후 다시 시도해주세요. 😥',
         timestamp: new Date()
       };
-
       setMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
     }
   };
 
-  // 엔터키로 전송
   const handleKeyPress = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -100,11 +94,11 @@ const ChatBot = ({ isOpen, onClose, groupId }) => {
     }
   };
 
-  // 시간 포맷
   const formatTime = (date) => {
-    return date.toLocaleTimeString('ko-KR', { 
-      hour: '2-digit', 
-      minute: '2-digit' 
+    return date.toLocaleTimeString('ko-KR', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
     });
   };
 
@@ -117,10 +111,10 @@ const ChatBot = ({ isOpen, onClose, groupId }) => {
         {/* 헤더 */}
         <div className="chatbot-header">
           <div className="chatbot-header-info">
-            <span className="chatbot-avatar">🤖</span>
+            <div className="chatbot-avatar">🤖</div>
             <div>
               <h3>총총이</h3>
-              <span className="chatbot-status">온라인</span>
+              <div className="chatbot-status">Online</div>
             </div>
           </div>
           <button className="chatbot-close-btn" onClick={onClose}>
@@ -136,7 +130,7 @@ const ChatBot = ({ isOpen, onClose, groupId }) => {
               className={`message ${message.sender === 'user' ? 'message-user' : 'message-bot'}`}
             >
               {message.sender === 'bot' && (
-                <span className="message-avatar">🤖</span>
+                <div className="message-avatar-small">🤖</div>
               )}
               <div className="message-content">
                 <div className="message-bubble">
@@ -151,7 +145,7 @@ const ChatBot = ({ isOpen, onClose, groupId }) => {
 
           {isLoading && (
             <div className="message message-bot">
-              <span className="message-avatar">🤖</span>
+              <div className="message-avatar-small">🤖</div>
               <div className="message-content">
                 <div className="message-bubble typing-indicator">
                   <span></span>
@@ -161,24 +155,26 @@ const ChatBot = ({ isOpen, onClose, groupId }) => {
               </div>
             </div>
           )}
-
           <div ref={messagesEndRef} />
         </div>
 
-        {/* 빠른 질문 버튼 */}
-        {messages.length <= 1 && !isLoading && (
-          <div className="quick-questions">
-            {quickQuestions.map((question, index) => (
-              <button
-                key={index}
-                className="quick-question-btn"
-                onClick={() => handleSendMessage(question.text)}
-              >
-                <span>{question.icon}</span>
-                {question.text}
-              </button>
-            ))}
-          </div>
+        {/* 추천 질문 (입력창 위로 배치) */}
+        {!isLoading && messages.length < 5 && (
+            <div className="quick-questions">
+            <div className="quick-questions-label">추천 질문</div>
+            <div className="quick-questions-buttons">
+                {quickQuestions.map((q, idx) => (
+                <button 
+                    key={idx} 
+                    className="quick-question-btn"
+                    onClick={() => handleSendMessage(q.text)}
+                >
+                    <span>{q.icon}</span>
+                    {q.text}
+                </button>
+                ))}
+            </div>
+            </div>
         )}
 
         {/* 입력 영역 */}
@@ -186,7 +182,7 @@ const ChatBot = ({ isOpen, onClose, groupId }) => {
           <input
             type="text"
             className="chatbot-input"
-            placeholder="메시지를 입력하세요..."
+            placeholder="궁금한 내용을 입력하세요..."
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
             onKeyPress={handleKeyPress}
@@ -197,7 +193,7 @@ const ChatBot = ({ isOpen, onClose, groupId }) => {
             onClick={() => handleSendMessage(inputText)}
             disabled={isLoading || !inputText.trim()}
           >
-            <span>📤</span>
+            ↑
           </button>
         </div>
       </div>
