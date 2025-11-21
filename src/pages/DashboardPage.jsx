@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import Modal from '../components/common/Modal'; 
 import './DashboardPage.css';
 
@@ -10,6 +10,7 @@ const isValidGroupId = (groupId) => {
 
 const DashboardPage = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   
   const [userName, setUserName] = useState('회원');
   const [dashboardData, setDashboardData] = useState(null);
@@ -42,24 +43,34 @@ const DashboardPage = () => {
     });
   };
 
-  // 초기 인증 및 사용자 정보 로드
+  // ✅ 최우선: URL에서 token 처리 및 인증/그룹 체크
   useEffect(() => {
+    // 1. URL 파라미터에서 token 확인 (OAuth 콜백)
+    const tokenFromUrl = searchParams.get('token');
+    if (tokenFromUrl) {
+      console.log('URL에서 token 발견, localStorage에 저장');
+      localStorage.setItem('accessToken', tokenFromUrl);
+      // URL에서 token 파라미터 제거 (보안)
+      window.history.replaceState({}, '', '/dashboard');
+    }
+
+    // 2. 토큰 체크
     const token = localStorage.getItem('accessToken');
     if (!token) {
-      showModal('로그인 필요', '로그인이 필요한 페이지입니다.', () => {
-        navigate('/login', { replace: true });
-      });
+      console.log('토큰 없음, 로그인 페이지로 이동');
+      navigate('/login', { replace: true });
       return;
     }
 
+    // 3. groupId 체크 - 없으면 즉시 리다이렉트
     const currentGroupId = localStorage.getItem('currentGroupId');
     if (!isValidGroupId(currentGroupId)) {
-      showModal('그룹 선택', '대시보드를 보려면 그룹을 먼저 선택해주세요.', () => {
-        navigate('/select-group', { replace: true });
-      });
+      console.log('groupId 없음 또는 유효하지 않음, select-group으로 이동');
+      navigate('/select-group', { replace: true });
       return;
     }
 
+    // 4. 토큰에서 사용자 정보 파싱
     try {
       const base64Url = token.split('.')[1];
       const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -76,7 +87,7 @@ const DashboardPage = () => {
       console.error('토큰 파싱 실패:', error);
       setUserName('회원');
     }
-  }, [navigate]);
+  }, [navigate, searchParams]);
 
   // 대시보드 데이터 가져오기
   const fetchDashboardData = useCallback(async (showLoading = true) => {
