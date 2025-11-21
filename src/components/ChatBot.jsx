@@ -28,7 +28,7 @@ const ChatBot = ({ isOpen, onClose, groupId }) => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, isLoading]); // isLoading 추가하여 로딩 중에도 스크롤
+  }, [messages, isLoading]);
 
   const handleSendMessage = async (text) => {
     if (!text.trim() || isLoading) return;
@@ -158,22 +158,25 @@ const ChatBot = ({ isOpen, onClose, groupId }) => {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* 추천 질문 (입력창 위로 배치) */}
-        {!isLoading && messages.length < 5 && (
-            <div className="quick-questions">
-            <div className="quick-questions-label">추천 질문</div>
-            <div className="quick-questions-buttons">
+        {/* ★ 수정됨: 추천 질문 영역 
+          1. 메시지 영역 밖으로 이동 (항상 하단 고정)
+          2. messages.length 조건 삭제 (대화해도 사라지지 않음)
+          3. 가로 스크롤 (Chip) 스타일 적용
+        */}
+        {!isLoading && (
+            <div className="suggestions-container">
+              <div className="suggestions-scroll-area">
                 {quickQuestions.map((q, idx) => (
-                <button 
+                  <button 
                     key={idx} 
-                    className="quick-question-btn"
+                    className="suggestion-chip"
                     onClick={() => handleSendMessage(q.text)}
-                >
+                  >
                     <span>{q.icon}</span>
                     {q.text}
-                </button>
+                  </button>
                 ))}
-            </div>
+              </div>
             </div>
         )}
 
