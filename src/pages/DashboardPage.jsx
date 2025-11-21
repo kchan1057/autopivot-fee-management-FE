@@ -1,8 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-// ✨ 1. 모달 컴포넌트 import
 import Modal from '../components/common/Modal'; 
 import './DashboardPage.css';
+
+// ✨ groupId 유효성 검증 유틸리티 함수
+const isValidGroupId = (groupId) => {
+  return groupId && groupId !== 'undefined' && groupId !== 'null';
+};
 
 const DashboardPage = () => {
   const navigate = useNavigate();
@@ -13,21 +17,21 @@ const DashboardPage = () => {
   const [lastUpdated, setLastUpdated] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  // ✨ 2. 모달 상태 관리용 State 추가
+  // 모달 상태 관리
   const [modalInfo, setModalInfo] = useState({
     isOpen: false,
     title: '',
     message: '',
-    type: 'alert', // 'alert' | 'confirm'
+    type: 'alert',
     onConfirm: null
   });
 
-  // ✨ 3. 모달 닫기 함수
+  // 모달 닫기 함수
   const closeModal = () => {
     setModalInfo(prev => ({ ...prev, isOpen: false }));
   };
 
-  // ✨ 4. 편하게 모달 띄우는 헬퍼 함수 (선택사항이지만 코드가 깔끔해짐)
+  // 모달 띄우는 헬퍼 함수
   const showModal = (title, message, onConfirm = null, type = 'alert') => {
     setModalInfo({
       isOpen: true,
@@ -38,13 +42,10 @@ const DashboardPage = () => {
     });
   };
 
-  // -----------------[ 로직 수정 구간 ]-----------------
-
+  // 초기 인증 및 사용자 정보 로드
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
     if (!token) {
-      // ❌ alert('로그인이 필요합니다.');
-      // ✅ 모달로 변경
       showModal('로그인 필요', '로그인이 필요한 페이지입니다.', () => {
         navigate('/login', { replace: true });
       });
@@ -52,9 +53,7 @@ const DashboardPage = () => {
     }
 
     const currentGroupId = localStorage.getItem('currentGroupId');
-    if (!currentGroupId || currentGroupId === 'undefined' || currentGroupId === 'null') {
-      // ❌ alert('그룹을 먼저 선택해주세요.');
-      // ✅ 모달로 변경
+    if (!isValidGroupId(currentGroupId)) {
       showModal('그룹 선택', '대시보드를 보려면 그룹을 먼저 선택해주세요.', () => {
         navigate('/select-group', { replace: true });
       });
@@ -65,7 +64,12 @@ const DashboardPage = () => {
       const base64Url = token.split('.')[1];
       const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
       const decodedAscii = atob(base64);
-      const utf8String = decodeURIComponent(Array.prototype.map.call(decodedAscii, (c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+      const utf8String = decodeURIComponent(
+        Array.prototype.map.call(
+          decodedAscii, 
+          (c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+        ).join('')
+      );
       const payload = JSON.parse(utf8String);
       setUserName(payload.name || '회원');
     } catch (error) {
@@ -74,20 +78,29 @@ const DashboardPage = () => {
     }
   }, [navigate]);
 
+  // 대시보드 데이터 가져오기
   const fetchDashboardData = useCallback(async (showLoading = true) => {
     try {
       if (showLoading) setIsLoading(true);
       else setIsRefreshing(true);
       
       const groupId = localStorage.getItem('currentGroupId');
-      if (!groupId) {
+      
+      // ✅ 개선된 groupId 검증
+      if (!isValidGroupId(groupId)) {
+        console.warn('유효하지 않은 groupId:', groupId);
         navigate('/select-group', { replace: true });
         return;
       }
       
-      const response = await fetch(`https://seongchan-spring.store/api/groups/${groupId}/dashboard`, {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` }
-      });
+      const response = await fetch(
+        `https://seongchan-spring.store/api/groups/${groupId}/dashboard`, 
+        {
+          headers: { 
+            'Authorization': `Bearer ${localStorage.getItem('accessToken')}` 
+          }
+        }
+      );
 
       if (!response.ok) throw new Error('데이터 로딩 실패');
 
@@ -97,37 +110,61 @@ const DashboardPage = () => {
       
     } catch (error) {
       console.error('데이터 로딩 오류:', error);
-      // 에러 발생 시 모달 띄우기
-      // showModal('오류 발생', '데이터를 불러오는데 실패했습니다.'); 
+      showModal('오류 발생', '데이터를 불러오는데 실패했습니다.');
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
     }
   }, [navigate]);
 
+  // 초기 데이터 로드
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
     const groupId = localStorage.getItem('currentGroupId');
-    if (token && groupId) fetchDashboardData(true);
+    
+    if (token && isValidGroupId(groupId)) {
+      fetchDashboardData(true);
+    }
   }, [fetchDashboardData]);
 
+  // ✅ 자동 새로고침 (60초마다) - 개선된 검증
   useEffect(() => {
     const interval = setInterval(() => {
       const groupId = localStorage.getItem('currentGroupId');
-      if (groupId) fetchDashboardData(false);
+      
+      // ✅ 핵심 수정: 'undefined', 'null' 문자열도 체크
+      if (isValidGroupId(groupId)) {
+        fetchDashboardData(false);
+      } else {
+        console.warn('자동 새로고침 건너뜀: 유효하지 않은 groupId');
+      }
     }, 60000);
+    
     return () => clearInterval(interval);
   }, [fetchDashboardData]);
 
+  // ✅ 수동 새로고침 - 개선된 검증
   const handleManualRefresh = async () => {
     const groupId = localStorage.getItem('currentGroupId');
-    if (!groupId) return;
+    
+    if (!isValidGroupId(groupId)) {
+      showModal('그룹 선택', '그룹을 먼저 선택해주세요.', () => {
+        navigate('/select-group');
+      });
+      return;
+    }
+    
     try {
       setIsRefreshing(true);
-      await fetch(`https://seongchan-spring.store/api/groups/${groupId}/dashboard/refresh`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` }
-      });
+      await fetch(
+        `https://seongchan-spring.store/api/groups/${groupId}/dashboard/refresh`, 
+        {
+          method: 'POST',
+          headers: { 
+            'Authorization': `Bearer ${localStorage.getItem('accessToken')}` 
+          }
+        }
+      );
       await fetchDashboardData(false);
     } catch (error) {
       console.error('새로고침 오류:', error);
@@ -137,8 +174,21 @@ const DashboardPage = () => {
     }
   };
 
-  // -----------------[ UI 렌더링 ]-----------------
+  // 시간 포맷 함수
+  const formatTime = (dateString) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diff = Math.floor((now - date) / 1000);
+    if (diff < 60) return '방금 전';
+    if (diff < 3600) return `${Math.floor(diff / 60)}분 전`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}시간 전`;
+    return date.toLocaleDateString('ko-KR', { 
+      month: 'numeric', 
+      day: 'numeric' 
+    });
+  };
 
+  // 로딩 화면
   if (isLoading || !dashboardData) {
     return (
       <div className="dashboard-page">
@@ -150,21 +200,30 @@ const DashboardPage = () => {
     );
   }
 
+  // 빠른 실행 메뉴
   const quickActions = [
-    { id: 'fees', icon: '💰', title: '회비 관리', desc: '납부 현황 확인', path: '/fees' },
-    { id: 'members', icon: '👥', title: '멤버 목록', desc: '우리 팀원 보기', path: '/members' },
-    { id: 'notices', icon: '📢', title: '공지사항', desc: '새로운 소식', path: '/notices' }
+    { 
+      id: 'fees', 
+      icon: '💰', 
+      title: '회비 관리', 
+      desc: '납부 현황 확인', 
+      path: '/fees' 
+    },
+    { 
+      id: 'members', 
+      icon: '👥', 
+      title: '멤버 목록', 
+      desc: '우리 팀원 보기', 
+      path: '/members' 
+    },
+    { 
+      id: 'notices', 
+      icon: '📢', 
+      title: '공지사항', 
+      desc: '새로운 소식', 
+      path: '/notices' 
+    }
   ];
-
-  const formatTime = (dateString) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diff = Math.floor((now - date) / 1000);
-    if (diff < 60) return '방금 전';
-    if (diff < 3600) return `${Math.floor(diff / 60)}분 전`;
-    if (diff < 86400) return `${Math.floor(diff / 3600)}시간 전`;
-    return date.toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric' });
-  };
 
   return (
     <div className="dashboard-page">
@@ -186,12 +245,17 @@ const DashboardPage = () => {
               onClick={handleManualRefresh} 
               disabled={isRefreshing}
             >
-              <span className={`refresh-icon ${isRefreshing ? 'spinning' : ''}`}>🔄</span>
+              <span className={`refresh-icon ${isRefreshing ? 'spinning' : ''}`}>
+                🔄
+              </span>
               새로고침
             </button>
             {lastUpdated && (
               <span className="last-updated">
-                {lastUpdated.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })} 기준
+                {lastUpdated.toLocaleTimeString('ko-KR', { 
+                  hour: '2-digit', 
+                  minute: '2-digit' 
+                })} 기준
               </span>
             )}
           </div>
@@ -231,7 +295,7 @@ const DashboardPage = () => {
           </div>
         </div>
 
-        {/* 3. 빠른 실행 (위젯) */}
+        {/* 3. 빠른 실행 */}
         <div className="quick-actions-grid">
           {quickActions.map((action) => (
             <div 
@@ -246,37 +310,52 @@ const DashboardPage = () => {
           ))}
         </div>
 
-        {/* 4. 하단 정보 그리드 (최근 활동 & 상세) */}
+        {/* 4. 하단 정보 그리드 */}
         <div className="dashboard-bottom-grid">
           
+          {/* 상세 현황 패널 */}
           <div className="glass-panel">
             <h3 className="panel-title">📊 상세 현황</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-               <div className="activity-item">
-                 <div className="activity-icon">💵</div>
-                 <div className="activity-info">
-                    <p className="activity-msg">총 목표 금액</p>
-                    <strong>{(dashboardData.totalMembers * (dashboardData.fee || 0))?.toLocaleString() || 0}원</strong>
-                 </div>
-               </div>
-               <div className="activity-item">
-                 <div className="activity-icon">👥</div>
-                 <div className="activity-info">
-                    <p className="activity-msg">전체 멤버</p>
-                    <strong>{dashboardData.totalMembers}명</strong>
-                 </div>
-               </div>
+              <div className="activity-item">
+                <div className="activity-icon">💵</div>
+                <div className="activity-info">
+                  <p className="activity-msg">총 목표 금액</p>
+                  <strong>
+                    {(dashboardData.totalMembers * (dashboardData.fee || 0))
+                      ?.toLocaleString() || 0}원
+                  </strong>
+                </div>
+              </div>
+              <div className="activity-item">
+                <div className="activity-icon">👥</div>
+                <div className="activity-info">
+                  <p className="activity-msg">전체 멤버</p>
+                  <strong>{dashboardData.totalMembers}명</strong>
+                </div>
+              </div>
             </div>
-             {/* 챗봇 버튼 - 여기서도 모달 사용! */}
-             <button 
-                className="refresh-btn" 
-                style={{ width: '100%', justifyContent: 'center', marginTop: '20px', background: '#f1f5f9', border: 'none' }}
-                onClick={() => showModal('준비 중', 'AI 비서 기능은 열심히 개발 중이에요! 🤖')}
-             >
-               🤖 AI 비서에게 물어보기
-             </button>
+            
+            {/* AI 비서 버튼 */}
+            <button 
+              className="refresh-btn" 
+              style={{ 
+                width: '100%', 
+                justifyContent: 'center', 
+                marginTop: '20px', 
+                background: '#f1f5f9', 
+                border: 'none' 
+              }}
+              onClick={() => showModal(
+                '준비 중', 
+                'AI 비서 기능은 열심히 개발 중이에요! 🤖'
+              )}
+            >
+              🤖 AI 비서에게 물어보기
+            </button>
           </div>
 
+          {/* 최근 입금 내역 패널 */}
           <div className="glass-panel">
             <h3 className="panel-title">💳 최근 입금 내역</h3>
             
@@ -291,7 +370,9 @@ const DashboardPage = () => {
                       <p className="activity-msg">
                         <strong>{payment.memberName}</strong>님이 입금했습니다.
                       </p>
-                      <span className="activity-time">{formatTime(payment.paidAt)}</span>
+                      <span className="activity-time">
+                        {formatTime(payment.paidAt)}
+                      </span>
                     </div>
                     <div style={{ fontWeight: '700', color: '#3b82f6' }}>
                       {payment.amount?.toLocaleString()}원
@@ -309,7 +390,7 @@ const DashboardPage = () => {
         </div>
       </div>
 
-      {/* ✨ 5. 맨 마지막에 모달 컴포넌트 배치 */}
+      {/* 모달 컴포넌트 */}
       <Modal 
         isOpen={modalInfo.isOpen}
         onClose={closeModal}
