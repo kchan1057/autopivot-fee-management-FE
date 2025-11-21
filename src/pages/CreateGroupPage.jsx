@@ -22,11 +22,11 @@ const CreateGroupPage = () => {
   const [currentStep, setCurrentStep] = useState(1);
 
   const groupCategories = [
-    { value: 'CLUB', label: '🏀 동아리' }, // 아이콘 살짝 추가해서 예쁘게
-    { value: 'STUDY', label: '📚 스터디' },
-    { value: 'SOCIAL_GATHERING', label: '🍺 친목회' },
-    { value: 'PROJECT', label: '💻 프로젝트' },
-    { value: 'OTHER', label: '✨ 기타' }
+    { value: 'CLUB', label: '동아리' },
+    { value: 'STUDY', label: '스터디' },
+    { value: 'SOCIAL_GATHERING', label: '친목회' },
+    { value: 'PROJECT', label: '프로젝트' },
+    { value: 'OTHER', label: '기타' }
   ];
 
   const generateAccountName = (name) => {
@@ -181,7 +181,7 @@ const CreateGroupPage = () => {
               
               {/* 섹션 1: 기본 정보 */}
               <div className="form-section">
-                <h3 className="form-section-title">📝 기본 정보</h3>
+                <h3 className="form-section-title">기본 정보</h3>
                 
                 <div className="form-group">
                   <label className="form-label required">그룹명</label>
@@ -206,7 +206,7 @@ const CreateGroupPage = () => {
                     maxLength={100}
                     readOnly={!accountName} // 자동 생성이므로 사용자가 수정 못하게 해도 좋지만, 일단 수정 가능하게 둠
                   />
-                  <span className="form-hint">💡 입금 확인 시 표시될 통장 이름입니다.</span>
+                  <span className="form-hint">입금 확인 시 표시될 통장 이름입니다.</span>
                 </div>
 
                 <div className="form-group">
@@ -239,7 +239,7 @@ const CreateGroupPage = () => {
 
               {/* 섹션 2: 회비 정보 */}
               <div className="form-section">
-                <h3 className="form-section-title">💰 회비 설정</h3>
+                <h3 className="form-section-title">회비 설정</h3>
                 
                 <div className="form-group">
                   <label className="form-label required">월 회비</label>
@@ -278,7 +278,7 @@ const CreateGroupPage = () => {
           {currentStep === 2 && (
             <div className="form-step">
               <div className="form-section">
-                <h3 className="form-section-title">📁 멤버 일괄 추가</h3>
+                <h3 className="form-section-title">멤버 일괄 추가</h3>
                 <p className="form-hint" style={{ marginBottom: '20px', fontSize: '14px' }}>
                   엑셀 파일로 멤버를 한 번에 등록할 수 있습니다.<br/>
                   없으시면 건너뛰고 나중에 추가해도 됩니다.
@@ -293,7 +293,7 @@ const CreateGroupPage = () => {
                       setFileName('');
                     }}
                   >
-                    <span className="choice-icon">📄</span>
+                    <span className="choice-icon"></span>
                     <span className="choice-title">파일이 있어요</span>
                     <span className="choice-description">엑셀/CSV 업로드</span>
                   </div>
@@ -325,13 +325,13 @@ const CreateGroupPage = () => {
                       <label htmlFor="excel-file" className="file-upload-label">
                         {fileName ? (
                           <>
-                            <span className="choice-icon">✅</span>
+                            <span className="choice-icon"></span>
                             <p className="file-name">{fileName}</p>
                             <p className="file-hint">파일을 변경하려면 클릭하세요</p>
                           </>
                         ) : (
                           <>
-                            <span className="choice-icon">📤</span>
+                            <span className="choice-icon"></span>
                             <p className="file-upload-text">여기를 클릭해 파일을 업로드하세요</p>
                             <p className="file-hint">지원 형식: .xlsx, .xls, .csv</p>
                           </>
@@ -359,7 +359,7 @@ const CreateGroupPage = () => {
                   disabled={isLoading}
                   style={{ flex: 2, borderRadius: '16px', height: '54px' }}
                 >
-                  {isLoading ? '생성 중...' : '완료 및 그룹 생성 🎉'}
+                  {isLoading ? '생성 중...' : '완료 및 그룹 생성'}
                 </Button>
               </div>
             </div>

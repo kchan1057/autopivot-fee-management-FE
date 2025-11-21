@@ -1,0 +1,109 @@
+/* 모달 전체를 감싸는 배경 (어두운 오버레이) */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.4); /* 반투명 검정 */
+  backdrop-filter: blur(4px); /* 뒷배경 흐리게 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000; /* 제일 위에 뜨도록 */
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* 모달 창 본체 (유리 디자인) */
+.modal-container {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(20px);
+  width: 90%;
+  max-width: 400px;
+  padding: 32px 24px;
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 1);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* 아이콘 애니메이션 */
+.modal-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  display: block;
+  animation: bounceIcon 0.5s ease;
+}
+
+.modal-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: #1e293b;
+  margin-bottom: 8px;
+}
+
+.modal-message {
+  font-size: 16px;
+  color: #64748b;
+  line-height: 1.6;
+  margin-bottom: 28px;
+  word-break: keep-all; /* 한글 단어 중간 끊김 방지 */
+}
+
+/* 버튼 영역 */
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  justify-content: center;
+}
+
+.modal-btn {
+  flex: 1;
+  padding: 14px;
+  border-radius: 16px;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+
+.modal-btn-confirm {
+  background: #3b82f6;
+  color: white;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+.modal-btn-confirm:hover {
+  background: #2563eb;
+  transform: translateY(-2px);
+}
+
+.modal-btn-cancel {
+  background: #f1f5f9;
+  color: #64748b;
+}
+.modal-btn-cancel:hover {
+  background: #e2e8f0;
+}
+
+/* 애니메이션 키프레임 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.9) translateY(20px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes bounceIcon {
+  0% { transform: scale(0); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}

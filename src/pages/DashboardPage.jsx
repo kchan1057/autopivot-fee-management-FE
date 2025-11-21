@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-// MainLayout 사용 안 함 (대시보드 전용 레이아웃 적용)
+// ✨ 1. 모달 컴포넌트 import
+import Modal from '../components/common/Modal'; 
 import './DashboardPage.css';
 
 const DashboardPage = () => {
@@ -12,24 +13,54 @@ const DashboardPage = () => {
   const [lastUpdated, setLastUpdated] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  // ... (useEffect 및 로직 부분은 기존 코드와 100% 동일하게 유지합니다) ...
-  // ✅ 코드가 길어서 생략했지만, 기존에 작성하신 로직 그대로 쓰시면 됩니다.
-  // 아래 return 문만 변경해주세요.
+  // ✨ 2. 모달 상태 관리용 State 추가
+  const [modalInfo, setModalInfo] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    type: 'alert', // 'alert' | 'confirm'
+    onConfirm: null
+  });
 
-  // -----------------[ 기존 로직 복붙 구간 시작 ]-----------------
+  // ✨ 3. 모달 닫기 함수
+  const closeModal = () => {
+    setModalInfo(prev => ({ ...prev, isOpen: false }));
+  };
+
+  // ✨ 4. 편하게 모달 띄우는 헬퍼 함수 (선택사항이지만 코드가 깔끔해짐)
+  const showModal = (title, message, onConfirm = null, type = 'alert') => {
+    setModalInfo({
+      isOpen: true,
+      title,
+      message,
+      type,
+      onConfirm
+    });
+  };
+
+  // -----------------[ 로직 수정 구간 ]-----------------
+
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
     if (!token) {
-      alert('로그인이 필요합니다.');
-      navigate('/login', { replace: true });
+      // ❌ alert('로그인이 필요합니다.');
+      // ✅ 모달로 변경
+      showModal('로그인 필요', '로그인이 필요한 페이지입니다.', () => {
+        navigate('/login', { replace: true });
+      });
       return;
     }
+
     const currentGroupId = localStorage.getItem('currentGroupId');
     if (!currentGroupId || currentGroupId === 'undefined' || currentGroupId === 'null') {
-      alert('그룹을 먼저 선택해주세요.');
-      navigate('/select-group', { replace: true });
+      // ❌ alert('그룹을 먼저 선택해주세요.');
+      // ✅ 모달로 변경
+      showModal('그룹 선택', '대시보드를 보려면 그룹을 먼저 선택해주세요.', () => {
+        navigate('/select-group', { replace: true });
+      });
       return;
     }
+
     try {
       const base64Url = token.split('.')[1];
       const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -66,7 +97,8 @@ const DashboardPage = () => {
       
     } catch (error) {
       console.error('데이터 로딩 오류:', error);
-      // 에러 처리는 상황에 맞게
+      // 에러 발생 시 모달 띄우기
+      // showModal('오류 발생', '데이터를 불러오는데 실패했습니다.'); 
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
@@ -99,13 +131,14 @@ const DashboardPage = () => {
       await fetchDashboardData(false);
     } catch (error) {
       console.error('새로고침 오류:', error);
+      showModal('새로고침 실패', '데이터 갱신 중 오류가 발생했습니다.');
     } finally {
       setIsRefreshing(false);
     }
   };
-  // -----------------[ 기존 로직 복붙 구간 끝 ]-----------------
 
-  // 🎨 UI 렌더링 시작
+  // -----------------[ UI 렌더링 ]-----------------
+
   if (isLoading || !dashboardData) {
     return (
       <div className="dashboard-page">
@@ -216,7 +249,6 @@ const DashboardPage = () => {
         {/* 4. 하단 정보 그리드 (최근 활동 & 상세) */}
         <div className="dashboard-bottom-grid">
           
-          {/* 왼쪽 패널: 상세 정보 (예시로 총 인원 등 표시, 필요시 다른 정보로 대체 가능) */}
           <div className="glass-panel">
             <h3 className="panel-title">📊 상세 현황</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
@@ -235,17 +267,16 @@ const DashboardPage = () => {
                  </div>
                </div>
             </div>
-             {/* 챗봇 버튼 */}
+             {/* 챗봇 버튼 - 여기서도 모달 사용! */}
              <button 
                 className="refresh-btn" 
                 style={{ width: '100%', justifyContent: 'center', marginTop: '20px', background: '#f1f5f9', border: 'none' }}
-                onClick={() => alert('준비 중입니다!')}
+                onClick={() => showModal('준비 중', 'AI 비서 기능은 열심히 개발 중이에요! 🤖')}
              >
                🤖 AI 비서에게 물어보기
              </button>
           </div>
 
-          {/* 오른쪽 패널: 최근 입금 내역 */}
           <div className="glass-panel">
             <h3 className="panel-title">💳 최근 입금 내역</h3>
             
@@ -277,6 +308,16 @@ const DashboardPage = () => {
 
         </div>
       </div>
+
+      {/* ✨ 5. 맨 마지막에 모달 컴포넌트 배치 */}
+      <Modal 
+        isOpen={modalInfo.isOpen}
+        onClose={closeModal}
+        onConfirm={modalInfo.onConfirm}
+        title={modalInfo.title}
+        message={modalInfo.message}
+        type={modalInfo.type}
+      />
     </div>
   );
 };

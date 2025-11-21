@@ -151,7 +151,7 @@ const GroupSelectPage = () => {
         {/* 헤더 영역 */}
         <div className="group-select-header">
           <h1 className="group-select-title">
-            반가워요, {userName}님! 👋
+            반가워요, {userName}님!
           </h1>
           <p className="group-select-subtitle">
             {groups.length > 0 
