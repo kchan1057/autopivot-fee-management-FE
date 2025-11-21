@@ -18,8 +18,7 @@ const ChatBot = ({ isOpen, onClose, groupId }) => {
   const quickQuestions = [
     { text: '미납자 현황', icon: '📋' },
     { text: '이번 달 회비', icon: '💰' },
-    { text: '사용법 안내', icon: '💡' },
-    { text: '공지사항 등록', icon: '📢' }
+    { text: '사용법 안내', icon: '💡' }
   ];
 
   const scrollToBottom = () => {
