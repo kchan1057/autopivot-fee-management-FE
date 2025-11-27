@@ -388,13 +388,18 @@ body {
   backdrop-filter: blur(16px);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-xl);
-  padding: var(--space-lg);
-  text-align: center;
+  padding: var(--space-xl) var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: var(--glass-shadow);
   position: relative;
   overflow: hidden;
+  min-height: 160px;
 }
 
 .action-card::before {
@@ -426,37 +431,42 @@ body {
 }
 
 .action-icon {
-  width: 52px;
-  height: 52px;
-  margin-bottom: var(--space-sm);
+  width: 56px;
+  height: 56px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, var(--slate-50), var(--slate-100));
+  background: linear-gradient(135deg, var(--primary-50), var(--primary-100));
   border-radius: var(--radius-lg);
   color: var(--primary-600);
   transition: all 0.3s ease;
 }
 
 .action-card:hover .action-icon {
-  background: linear-gradient(135deg, var(--primary-50), var(--primary-100));
+  background: linear-gradient(135deg, var(--primary-100), var(--primary-200));
   color: var(--primary-700);
-  transform: scale(1.05);
+  transform: scale(1.08);
+}
+
+.action-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
 }
 
 .action-title {
   font-family: var(--font-display);
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 700;
   color: var(--slate-800);
-  display: block;
-  margin-bottom: 2px;
+  letter-spacing: -0.3px;
 }
 
 .action-desc {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--slate-500);
-  display: block;
+  font-weight: 500;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -960,19 +970,21 @@ body {
   }
   
   .action-card {
-    padding: var(--space-md);
+    padding: var(--space-lg) var(--space-md);
+    min-height: 140px;
   }
   
   .action-icon {
-    font-size: 28px;
+    width: 48px;
+    height: 48px;
   }
   
   .action-title {
-    font-size: 13px;
+    font-size: 14px;
   }
   
   .action-desc {
-    font-size: 10px;
+    font-size: 12px;
   }
   
   .dashboard-bottom-grid {
@@ -994,23 +1006,30 @@ body {
   }
   
   .quick-actions-grid {
-    gap: 8px;
+    gap: 10px;
   }
   
   .action-card {
-    padding: 14px 8px;
+    padding: var(--space-md);
+    min-height: 120px;
+    gap: var(--space-sm);
   }
   
   .action-icon {
-    font-size: 24px;
-    margin-bottom: 6px;
+    width: 44px;
+    height: 44px;
+  }
+  
+  .action-icon svg {
+    width: 22px;
+    height: 22px;
   }
   
   .action-title {
-    font-size: 12px;
+    font-size: 13px;
   }
   
   .action-desc {
-    display: none;
+    font-size: 11px;
   }
 }

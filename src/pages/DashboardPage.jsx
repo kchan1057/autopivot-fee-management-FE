@@ -392,8 +392,10 @@ const DashboardPage = () => {
               onClick={() => navigate(action.path)}
             >
               <span className="action-icon">{action.icon}</span>
-              <span className="action-title">{action.title}</span>
-              <span className="action-desc">{action.desc}</span>
+              <div className="action-text">
+                <span className="action-title">{action.title}</span>
+                <span className="action-desc">{action.desc}</span>
+              </div>
             </div>
           ))}
         </div>
