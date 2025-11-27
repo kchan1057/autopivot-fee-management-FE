@@ -356,6 +356,14 @@ function MembersPage() {
             ) : (
               <div className="member-table-wrapper">
                 <table className="member-table">
+                  {/* colgroup으로 컬럼 비율 설정 */}
+                  <colgroup>
+                    <col style={{ width: '8%' }} />   {/* # */}
+                    <col style={{ width: '18%' }} />  {/* 이름 */}
+                    <col style={{ width: '30%' }} />  {/* 이메일 */}
+                    <col style={{ width: '24%' }} />  {/* 전화번호 */}
+                    <col style={{ width: '20%' }} />  {/* 관리 */}
+                  </colgroup>
                   <thead>
                     <tr>
                       <th>#</th>
@@ -372,12 +380,6 @@ function MembersPage() {
                         <td className="member-name">{member.name}</td>
                         <td className="member-email">{member.email || '-'}</td>
                         <td className="member-phone">{member.phone || '-'}</td>
-                        {/* 핵심 수정 사항: 
-                           td에 직접 className="member-actions"를 주지 않고,
-                           td 내부에 div를 만들어 class를 부여함.
-                           이렇게 하면 td는 테이블 셀의 높이를 유지하고, 
-                           div 내부에서만 flex 정렬이 일어남.
-                        */}
                         <td>
                           <div className="member-actions">
                             <button 

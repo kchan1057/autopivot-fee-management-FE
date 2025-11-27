@@ -240,53 +240,34 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   📊 테이블 스타일 (수정됨 - 셀 정렬 및 구분선 문제 해결)
+   📊 테이블 스타일 (수정됨 - 균등한 컬럼 비율 및 구분선 문제 해결)
    ═══════════════════════════════════════════════════════════════════════════ */
 .member-table-wrapper {
   overflow-x: auto;
   border-radius: 16px;
-  border: 1px solid #e2e8f0;
+  background: white;
 }
 
 .member-table {
   width: 100%;
-  border-collapse: collapse; /* separate → collapse로 변경하여 선 겹침 방지 */
+  border-collapse: collapse;
   border-spacing: 0;
-  table-layout: fixed; /* 고정 레이아웃으로 컬럼 너비 일정하게 유지 */
+  min-width: 600px; /* 최소 너비 설정으로 모바일에서도 가로 스크롤 */
 }
 
-/* 컬럼 너비 고정 */
-.member-table th:nth-child(1),
-.member-table td:nth-child(1) {
-  width: 60px; /* # 컬럼 */
-}
-
-.member-table th:nth-child(2),
-.member-table td:nth-child(2) {
-  width: 120px; /* 이름 컬럼 */
-}
-
-.member-table th:nth-child(3),
-.member-table td:nth-child(3) {
-  width: auto; /* 이메일 컬럼 - 남은 공간 차지 */
-}
-
-.member-table th:nth-child(4),
-.member-table td:nth-child(4) {
-  width: 150px; /* 전화번호 컬럼 */
-}
-
-.member-table th:nth-child(5),
-.member-table td:nth-child(5) {
-  width: 100px; /* 관리 컬럼 */
-}
+/* colgroup으로 컬럼 비율 설정 - 더 균등하게 */
+.member-table colgroup col:nth-child(1) { width: 8%; }   /* # */
+.member-table colgroup col:nth-child(2) { width: 18%; }  /* 이름 */
+.member-table colgroup col:nth-child(3) { width: 30%; }  /* 이메일 */
+.member-table colgroup col:nth-child(4) { width: 24%; }  /* 전화번호 */
+.member-table colgroup col:nth-child(5) { width: 20%; }  /* 관리 */
 
 .member-table thead tr {
   background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
 }
 
 .member-table th {
-  padding: 1rem;
+  padding: 1rem 1.25rem;
   font-size: 13px;
   font-weight: 700;
   color: var(--text-sub);
@@ -298,8 +279,13 @@
   white-space: nowrap;
 }
 
+.member-table th:first-child {
+  border-radius: 16px 0 0 0;
+}
+
 .member-table th:last-child {
   text-align: center;
+  border-radius: 0 16px 0 0;
 }
 
 .member-table tbody tr {
@@ -311,18 +297,25 @@
 }
 
 .member-table td {
-  padding: 1rem;
+  padding: 1.25rem 1.25rem;
   font-size: 14px;
   color: var(--text-main);
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid #e9ecef;
   vertical-align: middle;
-  /* 텍스트 오버플로우 처리 */
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-/* 마지막 행은 border-bottom 제거 */
+/* 마지막 행 하단 라운드 처리 */
+.member-table tbody tr:last-child td:first-child {
+  border-radius: 0 0 0 16px;
+}
+
+.member-table tbody tr:last-child td:last-child {
+  border-radius: 0 0 16px 0;
+}
+
 .member-table tbody tr:last-child td {
   border-bottom: none;
 }
@@ -717,11 +710,6 @@
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
   }
-  
-  /* 태블릿에서 테이블 컬럼 너비 조정 */
-  .member-table {
-    table-layout: auto; /* 자동 레이아웃으로 전환 */
-  }
 }
 
 @media (max-width: 768px) {
@@ -757,7 +745,7 @@
 
   .member-table th,
   .member-table td {
-    padding: 0.75rem 0.5rem;
+    padding: 0.875rem 1rem;
     font-size: 13px;
   }
 
@@ -784,24 +772,8 @@
     display: none;
   }
   
-  /* 모바일에서 컬럼 너비 재조정 */
-  .member-table th:nth-child(1),
-  .member-table td:nth-child(1) {
-    width: 40px;
-  }
-  
-  .member-table th:nth-child(2),
-  .member-table td:nth-child(2) {
-    width: auto;
-  }
-  
-  .member-table th:nth-child(4),
-  .member-table td:nth-child(4) {
-    width: 110px;
-  }
-  
-  .member-table th:nth-child(5),
-  .member-table td:nth-child(5) {
-    width: 80px;
+  .member-table th,
+  .member-table td {
+    padding: 0.75rem 0.5rem;
   }
 }
