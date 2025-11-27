@@ -9,6 +9,91 @@ const isValidGroupId = (groupId) => {
   return groupId && groupId !== 'undefined' && groupId !== 'null';
 };
 
+// 🎨 세련된 SVG 아이콘 컴포넌트들
+const Icons = {
+  // 새로고침 아이콘
+  Refresh: ({ className }) => (
+    <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+      <path d="M3 3v5h5"/>
+      <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/>
+      <path d="M16 16h5v5"/>
+    </svg>
+  ),
+  
+  // 회비 관리 (지갑 아이콘)
+  Wallet: () => (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/>
+      <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/>
+    </svg>
+  ),
+  
+  // 멤버 목록 (사용자들 아이콘)
+  Users: () => (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+      <circle cx="9" cy="7" r="4"/>
+      <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+      <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+    </svg>
+  ),
+  
+  // 그룹 설정 (톱니바퀴 아이콘)
+  Settings: () => (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+      <circle cx="12" cy="12" r="3"/>
+    </svg>
+  ),
+  
+  // 총 목표 금액 (동전 쌓인 아이콘)
+  Coins: () => (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="8" cy="8" r="6"/>
+      <path d="M18.09 10.37A6 6 0 1 1 10.34 18"/>
+      <path d="M7 6h1v4"/>
+      <path d="m16.71 13.88.7.71-2.82 2.82"/>
+    </svg>
+  ),
+  
+  // 전체 멤버 (사용자 그룹 아이콘)
+  UserGroup: () => (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M18 21a8 8 0 0 0-16 0"/>
+      <circle cx="10" cy="8" r="5"/>
+      <path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3"/>
+    </svg>
+  ),
+  
+  // AI 챗봇 (스파클 아이콘)
+  Sparkles: () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+      <path d="M5 3v4"/>
+      <path d="M19 17v4"/>
+      <path d="M3 5h4"/>
+      <path d="M17 19h4"/>
+    </svg>
+  ),
+  
+  // 체크 완료 (체크 서클)
+  CheckCircle: () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+      <polyline points="22,4 12,14.01 9,11.01"/>
+    </svg>
+  ),
+  
+  // 대기중 (시계)
+  Clock: () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10"/>
+      <polyline points="12,6 12,12 16,14"/>
+    </svg>
+  )
+};
+
 const DashboardPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -205,25 +290,25 @@ const DashboardPage = () => {
     );
   }
 
-  // 빠른 실행 메뉴
+  // 빠른 실행 메뉴 - SVG 아이콘으로 교체
   const quickActions = [
     { 
       id: 'fees', 
-      icon: '💰', 
+      icon: <Icons.Wallet />, 
       title: '회비 관리', 
       desc: '납부 현황 확인', 
       path: '/fees' 
     },
     { 
       id: 'members', 
-      icon: '👥', 
+      icon: <Icons.Users />, 
       title: '멤버 목록', 
       desc: '우리 팀원 보기', 
       path: '/members' 
     },
     { 
       id: 'groupSettings',
-      icon: '⚙️',
+      icon: <Icons.Settings />,
       title: '그룹 설정',
       desc: '그룹 정보 수정',
       path: '/group-settings'
@@ -237,7 +322,7 @@ const DashboardPage = () => {
         {/* 1. 헤더 영역 */}
         <div className="dashboard-header">
           <div className="header-greeting">
-            <h2>반가워요, {userName}님! 👋</h2>
+            <h2>반가워요, {userName}님!</h2>
             <p>
               <span className="group-badge">GROUP</span>
               {dashboardData.groupName}
@@ -250,9 +335,7 @@ const DashboardPage = () => {
               onClick={handleManualRefresh} 
               disabled={isRefreshing}
             >
-              <span className={`refresh-icon ${isRefreshing ? 'spinning' : ''}`}>
-                🔄
-              </span>
+              <Icons.Refresh className={`refresh-icon ${isRefreshing ? 'spinning' : ''}`} />
               새로고침
             </button>
             {lastUpdated && (
@@ -292,7 +375,7 @@ const DashboardPage = () => {
                 <label>미납</label>
                 <span>{dashboardData.unpaidMembers}명</span>
               </div>
-              <div className="stat-pill" style={{ background: 'rgba(255,255,255,0.3)' }}>
+              <div className="stat-pill stat-pill--highlight">
                 <label>총 모인 금액</label>
                 <span>{dashboardData.totalAmount?.toLocaleString()}원</span>
               </div>
@@ -321,32 +404,37 @@ const DashboardPage = () => {
           {/* 상세 현황 패널 */}
           <div className="glass-panel">
             <h3 className="panel-title">상세 현황</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-              <div className="activity-item">
-                <div className="activity-icon">💵</div>
-                <div className="activity-info">
-                  <p className="activity-msg">총 목표 금액</p>
-                  <strong>
+            <div className="status-list">
+              <div className="status-item">
+                <div className="status-icon status-icon--coins">
+                  <Icons.Coins />
+                </div>
+                <div className="status-info">
+                  <span className="status-label">총 목표 금액</span>
+                  <strong className="status-value">
                     {(dashboardData.totalMembers * (dashboardData.fee || 0))
                       ?.toLocaleString() || 0}원
                   </strong>
                 </div>
               </div>
-              <div className="activity-item">
-                <div className="activity-icon">👥</div>
-                <div className="activity-info">
-                  <p className="activity-msg">전체 멤버</p>
-                  <strong>{dashboardData.totalMembers}명</strong>
+              <div className="status-item">
+                <div className="status-icon status-icon--users">
+                  <Icons.UserGroup />
+                </div>
+                <div className="status-info">
+                  <span className="status-label">전체 멤버</span>
+                  <strong className="status-value">{dashboardData.totalMembers}명</strong>
                 </div>
               </div>
             </div>
             
             {/* 🤖 AI 비서 버튼 - 챗봇 열기 */}
             <button 
-              className="refresh-btn chatbot-trigger-btn" 
+              className="chatbot-trigger-btn" 
               onClick={handleOpenChatBot}
             >
-              🤖 AI 비서 총총이에게 물어보기
+              <Icons.Sparkles />
+              AI 비서 총총이에게 물어보기
             </button>
           </div>
 
@@ -359,7 +447,7 @@ const DashboardPage = () => {
                 {dashboardData.recentPayments.map((payment) => (
                   <div key={payment.paymentId} className="activity-item">
                     <div className="activity-icon">
-                      {payment.status === 'PAID' ? '✅' : '⏳'}
+                      {payment.status === 'PAID' ? <Icons.CheckCircle /> : <Icons.Clock />}
                     </div>
                     <div className="activity-info">
                       <p className="activity-msg">
@@ -369,7 +457,7 @@ const DashboardPage = () => {
                         {formatTime(payment.paidAt)}
                       </span>
                     </div>
-                    <div style={{ fontWeight: '700', color: '#3b82f6' }}>
+                    <div className="activity-amount">
                       {payment.amount?.toLocaleString()}원
                     </div>
                   </div>

@@ -1,9 +1,3 @@
-/* ═══════════════════════════════════════════════════════════════════════════
-   🎯 AutoFeeBot Dashboard - Premium Finance UI
-   Design Direction: Modern Fintech + Clean Glassmorphism
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-/* 🎨 Design Tokens */
 :root {
   /* Primary Colors - Ocean Blue Gradient */
   --primary-50: #eff6ff;
@@ -432,10 +426,22 @@ body {
 }
 
 .action-icon {
-  font-size: 36px;
+  width: 52px;
+  height: 52px;
   margin-bottom: var(--space-sm);
-  display: block;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--slate-50), var(--slate-100));
+  border-radius: var(--radius-lg);
+  color: var(--primary-600);
+  transition: all 0.3s ease;
+}
+
+.action-card:hover .action-icon {
+  background: linear-gradient(135deg, var(--primary-50), var(--primary-100));
+  color: var(--primary-700);
+  transform: scale(1.05);
 }
 
 .action-title {
@@ -539,7 +545,6 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
   flex-shrink: 0;
 }
 
@@ -590,21 +595,103 @@ body {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   📊 Status List (상세 현황)
+   ═══════════════════════════════════════════════════════════════════════════ */
+.status-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  background: white;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--slate-100);
+  transition: all 0.2s ease;
+}
+
+.status-item:hover {
+  border-color: var(--primary-200);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.08);
+}
+
+.status-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.status-icon--coins {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  color: #d97706;
+}
+
+.status-icon--users {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  color: #2563eb;
+}
+
+.status-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.status-label {
+  font-size: 13px;
+  color: var(--slate-500);
+  font-weight: 500;
+}
+
+.status-value {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--slate-800);
+}
+
+/* Activity Amount */
+.activity-amount {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--primary-600);
+  white-space: nowrap;
+}
+
+/* Stat Pill Highlight */
+.stat-pill--highlight {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
    🤖 AI Assistant Button
    ═══════════════════════════════════════════════════════════════════════════ */
 .chatbot-trigger-btn {
   width: 100%;
+  display: flex;
+  align-items: center;
   justify-content: center;
+  gap: 8px;
   margin-top: auto;
-  padding-top: var(--space-lg);
-  background: linear-gradient(135deg, var(--primary-600), #0ea5e9) !important;
-  border: none !important;
-  border-radius: var(--radius-lg) !important;
-  color: white !important;
-  font-weight: 600 !important;
-  font-size: 14px !important;
-  padding: 14px 20px !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  background: linear-gradient(135deg, var(--primary-600), #0ea5e9);
+  border: none;
+  border-radius: var(--radius-lg);
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 14px 20px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
   box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
@@ -627,8 +714,8 @@ body {
 }
 
 .chatbot-trigger-btn:hover {
-  transform: translateY(-3px) !important;
-  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4) !important;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
 }
 
 .chatbot-trigger-btn:hover::before {
@@ -636,7 +723,7 @@ body {
 }
 
 .chatbot-trigger-btn:active {
-  transform: translateY(-1px) !important;
+  transform: translateY(-1px);
 }
 
 /* Pulse Animation 제거 - 더 세련되게 */
