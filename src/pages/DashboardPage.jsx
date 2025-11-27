@@ -246,11 +246,11 @@ const DashboardPage = () => {
       path: '/members' 
     },
     { 
-      id: 'fixGroup', 
-      icon: '📢', 
-      title: '그룹 정보', 
-      desc: '내 그룹 확인하기', 
-      path: '/notices' 
+      id: 'groupSettings',
+      icon: '⚙️',
+      title: '그룹 설정',
+      desc: '그룹 정보 수정',
+      path: '/group-settings'
     }
   ];
 
