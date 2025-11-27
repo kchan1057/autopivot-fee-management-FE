@@ -177,41 +177,44 @@ body {
   flex-shrink: 0;
 }
 
-/* Refresh Container */
+/* ═══════════════════════════════════════════════════════════════════════════
+   🔄 Refresh Container & Button (수정됨 - 박스 밖 튀어나옴 해결)
+   ═══════════════════════════════════════════════════════════════════════════ */
 .refresh-container {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   gap: 6px;
-  flex-shrink: 0; /* 컨테이너가 찌그러지지 않도록 보호 */
+  flex-shrink: 0;
 }
 
-/* 🔥 새로고침 버튼 (수정됨: 높이 고정 제거 및 정렬 개선) */
+/* 새로고침 버튼 - 박스 내부에 잘 맞도록 수정 */
 .refresh-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 8px 12px; /* 상하좌우 패딩으로 자연스러운 크기 조절 */
-  /* height: 36px; -> 제거! 내용물에 맞춰 늘어나게 변경 */
-  min-height: 34px; /* 최소 높이만 설정 */
+  gap: 8px;
+  padding: 10px 16px;
+  min-height: 40px;
   background: white;
   border: 1px solid var(--slate-200);
-  border-radius: var(--radius-full);
-  font-size: 13px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
   font-weight: 600;
   color: var(--slate-600);
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   white-space: nowrap;
+  overflow: hidden;
 }
 
-/* 아이콘 찌그러짐 방지 */
-.refresh-btn svg {
-  width: 14px;
-  height: 14px;
-  flex-shrink: 0; /* 아이콘 크기 고정 */
+/* 아이콘 크기 고정 및 정렬 */
+.refresh-btn svg,
+.refresh-btn .refresh-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
   display: block;
 }
 
@@ -220,7 +223,7 @@ body {
   color: var(--primary-600);
   border-color: var(--primary-200);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .refresh-btn:active:not(:disabled) {
@@ -944,7 +947,7 @@ body {
   }
   
   .dashboard-header {
-    flex-wrap: wrap; /* 공간 부족 시 줄바꿈 */
+    flex-wrap: wrap;
     align-items: center;
     gap: 16px;
   }
@@ -953,11 +956,18 @@ body {
     font-size: 24px;
   }
   
+  /* 모바일에서 새로고침 버튼 크기 조정 */
   .refresh-btn {
-    padding: 6px 12px;
-    /* height 제거됨, font-size 유지 */
-    font-size: 12px;
-    min-height: 32px;
+    padding: 8px 14px;
+    font-size: 13px;
+    min-height: 36px;
+    gap: 6px;
+  }
+  
+  .refresh-btn svg,
+  .refresh-btn .refresh-icon {
+    width: 14px;
+    height: 14px;
   }
   
   .refresh-container {
