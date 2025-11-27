@@ -377,15 +377,13 @@ function MembersPage() {
                             className="action-btn edit-btn"
                             onClick={() => handleOpenEditModal(member)}
                             title="수정"
-                          >
-                            ✏️
+                          >✏️
                           </button>
                           <button 
                             className="action-btn delete-btn"
                             onClick={() => handleOpenDeleteModal(member)}
                             title="삭제"
-                          >
-                            🗑️
+                          >🗑️
                           </button>
                         </td>
                       </tr>
