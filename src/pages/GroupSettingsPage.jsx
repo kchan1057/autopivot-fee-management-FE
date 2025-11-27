@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import Modal from '../components/common/Modal';
 import './GroupSettingsPage.css';
 
 const GroupSettingsPage = () => {
