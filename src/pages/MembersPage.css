@@ -240,20 +240,20 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   📊 테이블 스타일 (완전 재작성 - 선 끊김 해결)
+   📊 테이블 스타일 (컬럼 너비 균등 배분)
    ═══════════════════════════════════════════════════════════════════════════ */
 .member-table-wrapper {
-  overflow-x: auto;
   border-radius: 16px;
   background: white;
   border: 1px solid #e2e8f0;
+  overflow: hidden;
 }
 
 .member-table {
   width: 100%;
-  border-collapse: separate;
+  border-collapse: collapse;
   border-spacing: 0;
-  min-width: 600px;
+  table-layout: fixed; /* 고정 레이아웃으로 너비 강제 적용 */
 }
 
 .member-table thead tr {
@@ -267,7 +267,10 @@
   color: var(--text-main);
   vertical-align: middle;
   text-align: left;
-  border-bottom: 1px solid #e2e8f0;
+  box-sizing: border-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .member-table th {
@@ -276,34 +279,53 @@
   color: var(--text-sub);
   text-transform: uppercase;
   letter-spacing: 0.5px;
+}
+
+/* 헤더와 바디 사이 구분선 */
+.member-table thead {
   border-bottom: 2px solid #e2e8f0;
 }
 
-/* 마지막 행 border 제거 */
-.member-table tbody tr:last-child td {
-  border-bottom: none;
-}
-
-/* # 컬럼 */
-.member-table th:nth-child(1),
-.member-table td:nth-child(1) {
-  width: 50px;
-  text-align: center;
-}
-
-/* 관리 컬럼 */
-.member-table th:last-child,
-.member-table td:last-child {
-  width: 110px;
-  text-align: center;
-}
-
+/* 각 행 하단 구분선 */
 .member-table tbody tr {
+  border-bottom: 1px solid #e9ecef;
   transition: background 0.2s ease;
+}
+
+.member-table tbody tr:last-child {
+  border-bottom: none;
 }
 
 .member-table tbody tr:hover {
   background: rgba(59, 130, 246, 0.04);
+}
+
+/* ✅ 컬럼 너비 고정 (총합 100%) */
+.member-table th:nth-child(1),
+.member-table td:nth-child(1) {
+  width: 8%;  /* # */
+  text-align: center;
+}
+
+.member-table th:nth-child(2),
+.member-table td:nth-child(2) {
+  width: 15%; /* 이름 */
+}
+
+.member-table th:nth-child(3),
+.member-table td:nth-child(3) {
+  width: 32%; /* 이메일 */
+}
+
+.member-table th:nth-child(4),
+.member-table td:nth-child(4) {
+  width: 25%; /* 전화번호 */
+}
+
+.member-table th:nth-child(5),
+.member-table td:nth-child(5) {
+  width: 20%; /* 관리 */
+  text-align: center;
 }
 
 .member-index {
