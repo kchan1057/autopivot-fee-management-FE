@@ -123,46 +123,62 @@ body {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   🏷️ Header Section
+   🏷️ Header Section (디자인 수정됨)
    ═══════════════════════════════════════════════════════════════════════════ */
 .dashboard-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: center; /* 중앙 정렬로 변경하여 균형 맞춤 */
   margin-bottom: var(--space-xl);
   padding: 0 var(--space-sm);
+  gap: 16px;
 }
 
+/* 인사말 및 그룹명 영역 */
+.header-greeting {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* "반가워요 OO님" - 서브 텍스트로 변경 */
 .header-greeting h2 {
   font-family: var(--font-display);
-  font-size: 32px;
-  font-weight: 700;
-  color: var(--slate-800);
-  margin: 0 0 8px 0;
-  letter-spacing: -0.5px;
+  font-size: 18px; /* 크기 줄임 */
+  font-weight: 500;
+  color: var(--slate-500);
+  margin: 0;
+  letter-spacing: -0.3px;
 }
 
+/* 🔥 그룹 이름 - 메인 타이틀로 강조 */
 .header-greeting p {
-  font-size: 16px;
-  color: var(--slate-500);
-  font-weight: 500;
+  font-family: var(--font-display);
+  font-size: 32px; /* 크기 대폭 확대 */
+  font-weight: 800; /* 두께 강조 */
+  color: var(--slate-800);
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   margin: 0;
+  line-height: 1.2;
 }
 
+/* GROUP 뱃지 스타일 */
 .group-badge {
   display: inline-flex;
   align-items: center;
-  background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+  justify-content: center;
+  background: linear-gradient(135deg, var(--primary-600), var(--primary-500));
   color: white;
-  padding: 4px 12px;
-  border-radius: var(--radius-full);
-  font-size: 12px;
-  font-weight: 700;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 800;
   letter-spacing: 0.5px;
   text-transform: uppercase;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
+  transform: translateY(-2px); /* 시각적 높이 보정 */
 }
 
 /* Refresh Container */
@@ -171,31 +187,39 @@ body {
   flex-direction: column;
   align-items: flex-end;
   gap: 6px;
+  flex-shrink: 0;
 }
 
+/* 🔥 새로고침 버튼 - 크기 축소 및 최적화 */
 .refresh-btn {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 12px 20px;
-  background: var(--glass-bg);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--glass-border);
+  gap: 6px;
+  padding: 8px 14px; /* 패딩 축소 */
+  height: 36px; /* 높이 고정 */
+  background: white;
+  border: 1px solid var(--slate-200);
   border-radius: var(--radius-full);
-  font-size: 15px;
+  font-size: 13px; /* 폰트 축소 */
   font-weight: 600;
   color: var(--slate-600);
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   white-space: nowrap;
 }
 
+.refresh-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
 .refresh-btn:hover:not(:disabled) {
-  background: white;
+  background: var(--slate-50);
   color: var(--primary-600);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+  border-color: var(--primary-200);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .refresh-btn:active:not(:disabled) {
@@ -205,6 +229,7 @@ body {
 .refresh-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+  background: var(--slate-100);
 }
 
 .refresh-icon {
@@ -217,9 +242,10 @@ body {
 }
 
 .last-updated {
-  font-size: 13px;
+  font-size: 11px;
   color: var(--slate-400);
   font-weight: 500;
+  padding-right: 4px;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -238,7 +264,7 @@ body {
     0 0 0 1px rgba(255, 255, 255, 0.1) inset;
 }
 
-/* 배경 패턴 - 기하학적 */
+/* 배경 패턴 */
 .hero-card::before {
   content: '';
   position: absolute;
@@ -718,7 +744,7 @@ body {
   transform: translateY(-1px);
 }
 
-/* Pulse Animation 제거 - 더 세련되게 */
+/* Pulse Animation */
 @keyframes subtle-glow {
   0%, 100% {
     box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
@@ -917,17 +943,23 @@ body {
   }
   
   .dashboard-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--space-md);
+    flex-wrap: wrap; /* 공간 부족 시 줄바꿈 */
+    align-items: center;
+    gap: 16px;
   }
   
-  .header-greeting h2 {
-    font-size: 28px;
+  .header-greeting p {
+    font-size: 24px; /* 모바일에서는 살짝 줄임 */
+  }
+  
+  .refresh-btn {
+    padding: 6px 12px;
+    height: 32px;
+    font-size: 12px;
   }
   
   .refresh-container {
-    align-items: flex-start;
+    align-items: flex-end;
   }
   
   .hero-card {
@@ -987,10 +1019,6 @@ body {
 }
 
 @media (max-width: 480px) {
-  .header-greeting h2 {
-    font-size: 26px;
-  }
-  
   .payment-rate-big {
     font-size: 44px;
   }

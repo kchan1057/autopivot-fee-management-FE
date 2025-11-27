@@ -372,19 +372,24 @@ function MembersPage() {
                         <td className="member-name">{member.name}</td>
                         <td className="member-email">{member.email || '-'}</td>
                         <td className="member-phone">{member.phone || '-'}</td>
-                        <td className="member-actions">
-                          <button 
-                            className="action-btn edit-btn"
-                            onClick={() => handleOpenEditModal(member)}
-                            title="수정"
-                          >✏️
-                          </button>
-                          <button 
-                            className="action-btn delete-btn"
-                            onClick={() => handleOpenDeleteModal(member)}
-                            title="삭제"
-                          >🗑️
-                          </button>
+                        <td>
+                          {/* 여기를 div로 감싸서 Flex 스타일이 td의 테이블 속성을 깨뜨리지 않도록 수정했습니다 */}
+                          <div className="member-actions">
+                            <button 
+                              className="action-btn edit-btn"
+                              onClick={() => handleOpenEditModal(member)}
+                              title="수정"
+                            >
+                              ✏️
+                            </button>
+                            <button 
+                              className="action-btn delete-btn"
+                              onClick={() => handleOpenDeleteModal(member)}
+                              title="삭제"
+                            >
+                              🗑️
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
