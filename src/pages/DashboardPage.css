@@ -52,7 +52,7 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   🌌 Page Background - 드래그 시 배경 문제 완전 해결
+   🌌 Page Background
    ═══════════════════════════════════════════════════════════════════════════ */
 html {
   background: linear-gradient(145deg, #0f172a 0%, #1e293b 100%);
@@ -79,12 +79,10 @@ body {
   position: relative;
   padding: var(--space-lg);
   overflow-x: hidden;
-  
-  /* ✅ 드래그 시 배경 보이는 문제 해결 */
   overscroll-behavior: none;
 }
 
-/* 배경 오브 효과 - 더 섬세하게 */
+/* 배경 오브 효과 */
 .dashboard-page::before {
   content: '';
   position: fixed;
@@ -123,39 +121,37 @@ body {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   🏷️ Header Section (디자인 수정됨)
+   🏷️ Header Section (수정됨)
    ═══════════════════════════════════════════════════════════════════════════ */
 .dashboard-header {
   display: flex;
   justify-content: space-between;
-  align-items: center; /* 중앙 정렬로 변경하여 균형 맞춤 */
+  align-items: center; 
   margin-bottom: var(--space-xl);
   padding: 0 var(--space-sm);
   gap: 16px;
 }
 
-/* 인사말 및 그룹명 영역 */
 .header-greeting {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
-/* "반가워요 OO님" - 서브 텍스트로 변경 */
 .header-greeting h2 {
   font-family: var(--font-display);
-  font-size: 18px; /* 크기 줄임 */
+  font-size: 18px;
   font-weight: 500;
   color: var(--slate-500);
   margin: 0;
   letter-spacing: -0.3px;
 }
 
-/* 🔥 그룹 이름 - 메인 타이틀로 강조 */
+/* 그룹 이름 강조 */
 .header-greeting p {
   font-family: var(--font-display);
-  font-size: 32px; /* 크기 대폭 확대 */
-  font-weight: 800; /* 두께 강조 */
+  font-size: 32px;
+  font-weight: 800;
   color: var(--slate-800);
   display: flex;
   align-items: center;
@@ -164,7 +160,6 @@ body {
   line-height: 1.2;
 }
 
-/* GROUP 뱃지 스타일 */
 .group-badge {
   display: inline-flex;
   align-items: center;
@@ -178,7 +173,8 @@ body {
   letter-spacing: 0.5px;
   text-transform: uppercase;
   box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
-  transform: translateY(-2px); /* 시각적 높이 보정 */
+  transform: translateY(-2px);
+  flex-shrink: 0;
 }
 
 /* Refresh Container */
@@ -187,20 +183,22 @@ body {
   flex-direction: column;
   align-items: flex-end;
   gap: 6px;
-  flex-shrink: 0;
+  flex-shrink: 0; /* 컨테이너가 찌그러지지 않도록 보호 */
 }
 
-/* 🔥 새로고침 버튼 - 크기 축소 및 최적화 */
+/* 🔥 새로고침 버튼 (수정됨: 높이 고정 제거 및 정렬 개선) */
 .refresh-btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
-  padding: 8px 14px; /* 패딩 축소 */
-  height: 36px; /* 높이 고정 */
+  padding: 8px 12px; /* 상하좌우 패딩으로 자연스러운 크기 조절 */
+  /* height: 36px; -> 제거! 내용물에 맞춰 늘어나게 변경 */
+  min-height: 34px; /* 최소 높이만 설정 */
   background: white;
   border: 1px solid var(--slate-200);
   border-radius: var(--radius-full);
-  font-size: 13px; /* 폰트 축소 */
+  font-size: 13px;
   font-weight: 600;
   color: var(--slate-600);
   cursor: pointer;
@@ -209,9 +207,12 @@ body {
   white-space: nowrap;
 }
 
+/* 아이콘 찌그러짐 방지 */
 .refresh-btn svg {
   width: 14px;
   height: 14px;
+  flex-shrink: 0; /* 아이콘 크기 고정 */
+  display: block;
 }
 
 .refresh-btn:hover:not(:disabled) {
@@ -249,7 +250,7 @@ body {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   🎯 Hero Card - 핀테크 스타일 메인 카드
+   🎯 Hero Card
    ═══════════════════════════════════════════════════════════════════════════ */
 .hero-card {
   background: var(--hero-gradient);
@@ -278,7 +279,7 @@ body {
   pointer-events: none;
 }
 
-/* 그리드 패턴 오버레이 */
+/* 그리드 패턴 */
 .hero-card::after {
   content: '';
   position: absolute;
@@ -613,7 +614,7 @@ body {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   📊 Status List (상세 현황)
+   📊 Status List
    ═══════════════════════════════════════════════════════════════════════════ */
 .status-list {
   display: flex;
@@ -949,13 +950,14 @@ body {
   }
   
   .header-greeting p {
-    font-size: 24px; /* 모바일에서는 살짝 줄임 */
+    font-size: 24px;
   }
   
   .refresh-btn {
     padding: 6px 12px;
-    height: 32px;
+    /* height 제거됨, font-size 유지 */
     font-size: 12px;
+    min-height: 32px;
   }
   
   .refresh-container {

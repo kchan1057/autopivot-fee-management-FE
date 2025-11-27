@@ -372,8 +372,13 @@ function MembersPage() {
                         <td className="member-name">{member.name}</td>
                         <td className="member-email">{member.email || '-'}</td>
                         <td className="member-phone">{member.phone || '-'}</td>
+                        {/* 핵심 수정 사항: 
+                           td에 직접 className="member-actions"를 주지 않고,
+                           td 내부에 div를 만들어 class를 부여함.
+                           이렇게 하면 td는 테이블 셀의 높이를 유지하고, 
+                           div 내부에서만 flex 정렬이 일어남.
+                        */}
                         <td>
-                          {/* 여기를 div로 감싸서 Flex 스타일이 td의 테이블 속성을 깨뜨리지 않도록 수정했습니다 */}
                           <div className="member-actions">
                             <button 
                               className="action-btn edit-btn"
