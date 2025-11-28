@@ -2,26 +2,30 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import Button from '../components/common/Button';
+import excelFormatImage from '../assets/excel.png'; // 엑셀 양식 이미지 import
 import './CreateGroupPage.css';
 
 const CreateGroupPage = () => {
   const navigate = useNavigate();
-  
+
   // 그룹 기본 정보
   const [groupName, setGroupName] = useState('');
   const [accountName, setAccountName] = useState('');
   const [description, setDescription] = useState('');
   const [fee, setFee] = useState('');
   const [groupCategory, setGroupCategory] = useState('');
-  
+
   // 엑셀 파일 관련
   const [hasExcelFile, setHasExcelFile] = useState(null);
   const [excelFile, setExcelFile] = useState(null);
   const [fileName, setFileName] = useState('');
-  
   const [isLoading, setIsLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
-  const [createdGroupId, setCreatedGroupId] = useState(null); // 생성된 그룹 ID 저장
+  const [createdGroupId, setCreatedGroupId] = useState(null);
+
+  // 모달 상태들
+  const [showSkipModal, setShowSkipModal] = useState(false);
+  const [showFormatModal, setShowFormatModal] = useState(false); // 엑셀 양식 안내 모달
 
   const groupCategories = [
     { value: 'CLUB', label: '동아리' },
@@ -76,17 +80,15 @@ const CreateGroupPage = () => {
     return true;
   };
 
-  // Step 1: 그룹 생성 (멤버 없이)
   const handleCreateGroup = async () => {
     if (!validateStep1()) {
       return;
     }
 
     const loadingToast = toast.loading('그룹 생성 중...');
-
     try {
       setIsLoading(true);
-      
+
       const groupData = {
         groupName: groupName.trim(),
         accountName: accountName.trim(),
@@ -111,20 +113,16 @@ const CreateGroupPage = () => {
 
       const result = await response.json();
       const groupId = result.groupId || result.id;
-      
+
       if (!groupId) {
         throw new Error('그룹 ID를 받지 못했습니다.');
       }
 
-      // 그룹 ID 저장
       setCreatedGroupId(groupId);
       localStorage.setItem('currentGroupId', groupId);
-      
+
       toast.success('그룹이 생성되었습니다!', { id: loadingToast });
-      
-      // Step 2로 이동
       setCurrentStep(2);
-      
     } catch (error) {
       console.error('그룹 생성 오류:', error);
       toast.error(error.message || '그룹 생성 중 오류가 발생했습니다.', { id: loadingToast });
@@ -133,9 +131,7 @@ const CreateGroupPage = () => {
     }
   };
 
-  // Step 2: 멤버 추가 (선택적)
   const handleAddMembers = async () => {
-    // 엑셀 파일이 없으면 바로 대시보드로
     if (hasExcelFile === false || !excelFile) {
       toast.success('그룹이 성공적으로 생성되었습니다!');
       setTimeout(() => {
@@ -145,10 +141,9 @@ const CreateGroupPage = () => {
     }
 
     const loadingToast = toast.loading('멤버 추가 중...');
-
     try {
       setIsLoading(true);
-      
+
       const formData = new FormData();
       formData.append('file', excelFile);
 
@@ -169,19 +164,19 @@ const CreateGroupPage = () => {
       }
 
       const result = await response.json();
-      
       toast.success(`${result.count || result.length || '여러'} 명의 멤버가 추가되었습니다!`, { id: loadingToast });
-      
+
       setTimeout(() => {
         navigate('/dashboard');
       }, 500);
-      
     } catch (error) {
       console.error('멤버 추가 오류:', error);
-      // 멤버 추가 실패해도 그룹은 생성되었으므로
       toast.error(`멤버 추가 중 오류 발생: ${error.message}`, { id: loadingToast });
-      toast('그룹 페이지에서 나중에 멤버를 추가할 수 있습니다.', { icon: 'ℹ️', duration: 4000 });
-      
+      toast('그룹 페이지에서 나중에 멤버를 추가할 수 있습니다.', {
+        icon: 'ℹ️',
+        duration: 4000
+      });
+
       setTimeout(() => {
         navigate('/dashboard');
       }, 2000);
@@ -192,69 +187,62 @@ const CreateGroupPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (hasExcelFile === null) {
       toast.error('엑셀 파일 보유 여부를 선택해주세요.');
       return;
     }
-    
+
     if (hasExcelFile && !excelFile) {
       toast.error('엑셀 파일을 업로드해주세요.');
       return;
     }
 
-    // Step 2에서는 멤버 추가만 수행
     await handleAddMembers();
   };
-
-  // 건너뛰기 확인 모달 상태
-  const [showSkipModal, setShowSkipModal] = useState(false);
 
   return (
     <div className="create-group-page">
       <div className="create-group-glass-panel">
-        
-        {/* 헤더 */}
-        <div className="create-group-header">
-          <h1 className="create-group-title">
-            {currentStep === 1 ? '그룹 만들기' : '멤버 초대하기'}
-          </h1>
-          <p className="create-group-subtitle">
-            {currentStep === 1 
-              ? '모임 관리를 위한 기본 정보를 알려주세요.'
-              : '함께할 멤버들을 어떻게 추가할까요?'
-            }
-          </p>
-        </div>
-
-        {/* 진행 단계 (Progress Bar) */}
-        <div className="progress-steps">
-          <div className={`progress-step ${currentStep >= 1 ? 'active' : ''}`}>
-            <div className="progress-step-number">1</div>
-            <div className="progress-step-label">기본 정보</div>
-          </div>
-          <div className="progress-step-line"></div>
-          <div className={`progress-step ${currentStep >= 2 ? 'active' : ''}`}>
-            <div className="progress-step-number">2</div>
-            <div className="progress-step-label">멤버 추가</div>
-          </div>
-        </div>
-
         <form onSubmit={handleSubmit}>
+          {/* 헤더 */}
+          <div className="create-group-header">
+            <h1 className="create-group-title">
+              {currentStep === 1 ? '그룹 만들기' : '멤버 초대하기'}
+            </h1>
+            <p className="create-group-subtitle">
+              {currentStep === 1
+                ? '모임 관리를 위한 기본 정보를 알려주세요.'
+                : '함께할 멤버들을 어떻게 추가할까요?'
+              }
+            </p>
+          </div>
+
+          {/* 진행 단계 (Progress Bar) */}
+          <div className="progress-steps">
+            <div className={`progress-step ${currentStep >= 1 ? 'active' : ''}`}>
+              <div className="progress-step-number">1</div>
+              <span className="progress-step-label">기본 정보</span>
+            </div>
+            <div className="progress-step-line"></div>
+            <div className={`progress-step ${currentStep >= 2 ? 'active' : ''}`}>
+              <div className="progress-step-number">2</div>
+              <span className="progress-step-label">멤버 추가</span>
+            </div>
+          </div>
+
           {/* Step 1: 그룹 기본 정보 */}
           {currentStep === 1 && (
             <div className="form-step">
-              
-              {/* 섹션 1: 기본 정보 */}
               <div className="form-section">
                 <h3 className="form-section-title">기본 정보</h3>
-                
+
                 <div className="form-group">
                   <label className="form-label required">그룹명</label>
                   <input
                     type="text"
                     className="form-input"
-                    placeholder="예: 2024 독서 모임"
+                    placeholder="예: 우리 스터디, 대학 동아리"
                     value={groupName}
                     onChange={handleGroupNameChange}
                     maxLength={50}
@@ -266,7 +254,7 @@ const CreateGroupPage = () => {
                   <input
                     type="text"
                     className="form-input"
-                    placeholder="자동으로 입력됩니다"
+                    placeholder="자동 생성됩니다"
                     value={accountName}
                     onChange={(e) => setAccountName(e.target.value)}
                     maxLength={100}
@@ -278,7 +266,7 @@ const CreateGroupPage = () => {
                   <label className="form-label">설명 (선택)</label>
                   <textarea
                     className="form-textarea"
-                    placeholder="어떤 모임인지 간단하게 소개해주세요."
+                    placeholder="그룹에 대한 간단한 설명을 입력해주세요."
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     maxLength={200}
@@ -302,10 +290,8 @@ const CreateGroupPage = () => {
                 </div>
               </div>
 
-              {/* 섹션 2: 회비 정보 */}
               <div className="form-section">
                 <h3 className="form-section-title">회비 설정</h3>
-                
                 <div className="form-group">
                   <label className="form-label required">월 회비</label>
                   <div className="input-with-unit">
@@ -315,8 +301,8 @@ const CreateGroupPage = () => {
                       placeholder="0"
                       value={fee}
                       onChange={(e) => setFee(e.target.value)}
-                      min="0"
-                      step="1000"
+                      min="1"
+                      step="any"
                     />
                     <span className="input-unit">원</span>
                   </div>
@@ -331,7 +317,7 @@ const CreateGroupPage = () => {
                   onClick={handleCreateGroup}
                   disabled={isLoading}
                   fullWidth
-                  style={{ borderRadius: '16px', height: '54px', fontSize: '16px' }} 
+                  style={{ borderRadius: '16px', height: '54px', fontSize: '16px' }}
                 >
                   {isLoading ? '그룹 생성 중...' : '다음으로 계속하기'}
                 </Button>
@@ -345,7 +331,7 @@ const CreateGroupPage = () => {
               <div className="form-section">
                 <h3 className="form-section-title">멤버 일괄 추가</h3>
                 <p className="form-hint" style={{ marginBottom: '20px', fontSize: '14px' }}>
-                  엑셀 파일로 멤버를 한 번에 등록할 수 있습니다.<br/>
+                  엑셀 파일로 멤버를 한 번에 등록할 수 있습니다.<br />
                   없으시면 건너뛰고 나중에 추가해도 됩니다.
                 </p>
 
@@ -379,6 +365,17 @@ const CreateGroupPage = () => {
 
                 {hasExcelFile === true && (
                   <div className="file-upload-section">
+                    {/* 📋 양식 안내 버튼 */}
+                    <button
+                      type="button"
+                      className="format-guide-button"
+                      onClick={() => setShowFormatModal(true)}
+                    >
+                      <span className="format-guide-icon">📋</span>
+                      <span className="format-guide-text">엑셀 양식 안내 보기</span>
+                      <span className="format-guide-arrow">→</span>
+                    </button>
+
                     <div className="file-upload-area">
                       <input
                         type="file"
@@ -418,6 +415,7 @@ const CreateGroupPage = () => {
                 >
                   건너뛰기
                 </Button>
+
                 <Button
                   type="submit"
                   variant="primary"
@@ -425,7 +423,11 @@ const CreateGroupPage = () => {
                   disabled={isLoading}
                   style={{ flex: 2, borderRadius: '16px', height: '54px' }}
                 >
-                  {isLoading ? '멤버 추가 중...' : hasExcelFile ? '멤버 추가 완료' : '대시보드로 이동'}
+                  {isLoading
+                    ? '멤버 추가 중...'
+                    : hasExcelFile
+                      ? '멤버 추가 완료'
+                      : '대시보드로 이동'}
                 </Button>
               </div>
             </div>
@@ -439,16 +441,88 @@ const CreateGroupPage = () => {
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <h3 className="modal-title">멤버 추가 건너뛰기</h3>
             <p style={{ color: '#64748b', marginBottom: '24px', lineHeight: '1.6' }}>
-              멤버 추가를 건너뛰고 대시보드로 이동하시겠습니까?<br/>
+              멤버 추가를 건너뛰고 대시보드로 이동하시겠습니까?<br />
               나중에 멤버 관리에서 추가할 수 있습니다.
             </p>
             <div className="modal-buttons">
               <button className="btn-cancel" onClick={() => setShowSkipModal(false)}>취소</button>
-              <button className="btn-submit" onClick={() => {
-                setShowSkipModal(false);
-                toast.success('그룹이 생성되었습니다!');
-                navigate('/dashboard');
-              }}>건너뛰기</button>
+              <button
+                className="btn-submit"
+                onClick={() => {
+                  setShowSkipModal(false);
+                  toast.success('그룹이 생성되었습니다!');
+                  navigate('/dashboard');
+                }}
+              >
+                건너뛰기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 📋 엑셀 양식 안내 모달 */}
+      {showFormatModal && (
+        <div className="modal-overlay" onClick={() => setShowFormatModal(false)}>
+          <div className="format-modal-content" onClick={(e) => e.stopPropagation()}>
+            {/* 모달 헤더 */}
+            <div className="format-modal-header">
+              <div className="format-modal-icon">📋</div>
+              <h3 className="format-modal-title">엑셀 양식 안내</h3>
+              <button
+                className="format-modal-close"
+                onClick={() => setShowFormatModal(false)}
+                aria-label="닫기"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* 이미지 영역 */}
+            <div className="format-modal-image-wrapper">
+              <img
+                src={excelFormatImage}
+                alt="엑셀 양식 예시"
+                className="format-modal-image"
+              />
+            </div>
+
+            {/* 설명 영역 */}
+            <div className="format-modal-description">
+              <h4 className="format-desc-title">필수 컬럼 안내</h4>
+              <ul className="format-desc-list">
+                <li>
+                  <span className="format-desc-label">이름</span>
+                  <span className="format-desc-value">멤버의 실명을 입력해주세요</span>
+                </li>
+                <li>
+                  <span className="format-desc-label">전화번호</span>
+                  <span className="format-desc-value">010-0000-0000 형식 권장</span>
+                </li>
+                <li>
+                  <span className="format-desc-label">이메일</span>
+                  <span className="format-desc-value">알림 발송용 이메일 주소</span>
+                </li>
+              </ul>
+
+              <div className="format-tips">
+                <span className="format-tips-icon">💡</span>
+                <p className="format-tips-text">
+                  첫 번째 행은 헤더(이름, 전화번호, 이메일)로 사용됩니다.<br />
+                  두 번째 행부터 실제 멤버 정보를 입력해주세요.
+                </p>
+              </div>
+            </div>
+
+            {/* 모달 푸터 */}
+            <div className="format-modal-footer">
+              <button
+                className="btn-submit"
+                onClick={() => setShowFormatModal(false)}
+                style={{ width: '100%' }}
+              >
+                확인했어요
+              </button>
             </div>
           </div>
         </div>
