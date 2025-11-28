@@ -11,11 +11,11 @@ const isValidGroupId = (groupId) => {
 // 🎨 SVG 아이콘 컴포넌트
 const Icons = {
   Refresh: ({ className }) => (
-    <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
-      <path d="M3 3v5h5"/>
-      <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/>
-      <path d="M16 16h5v5"/>
+    <svg className={className} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+      <path d="M21 3v5h-5"/>
+      <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+      <path d="M8 16H3v5"/>
     </svg>
   ),
   
@@ -59,15 +59,38 @@ const Icons = {
     </svg>
   ),
 
+  TrendingUp: () => (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/>
+      <polyline points="16 7 22 7 22 13"/>
+    </svg>
+  ),
+
+  Calendar: () => (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
+      <line x1="16" x2="16" y1="2" y2="6"/>
+      <line x1="8" x2="8" y1="2" y2="6"/>
+      <line x1="3" x2="21" y1="10" y2="10"/>
+    </svg>
+  ),
+
   Send: () => (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M5 12h14"/>
-      <path d="m12 5 7 7-7 7"/>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+    </svg>
+  ),
+
+  Mic: () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+      <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+      <line x1="12" x2="12" y1="19" y2="22"/>
     </svg>
   )
 };
 
-// 🤖 인라인 채팅 패널 컴포넌트 (기존 ChatBot 로직 반영)
+// 🤖 인라인 채팅 패널 컴포넌트
 const InlineChatPanel = ({ groupId }) => {
   const [messages, setMessages] = useState([
     {
@@ -79,8 +102,10 @@ const InlineChatPanel = ({ groupId }) => {
   ]);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isListening, setIsListening] = useState(false);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+  const recognitionRef = useRef(null);
 
   // 추천 질문
   const quickQuestions = [
@@ -97,7 +122,50 @@ const InlineChatPanel = ({ groupId }) => {
     scrollToBottom();
   }, [messages, isLoading]);
 
-  // 메시지 전송 (기존 ChatBot API 엔드포인트 사용)
+  // 🎤 음성 인식 초기화
+  useEffect(() => {
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = false;
+      recognitionRef.current.interimResults = false;
+      recognitionRef.current.lang = 'ko-KR';
+
+      recognitionRef.current.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        setInputText(transcript);
+        setIsListening(false);
+      };
+
+      recognitionRef.current.onerror = () => {
+        setIsListening(false);
+        toast.error('음성 인식에 실패했습니다.');
+      };
+
+      recognitionRef.current.onend = () => {
+        setIsListening(false);
+      };
+    }
+  }, []);
+
+  // 🎤 음성 인식 토글
+  const toggleVoiceInput = () => {
+    if (!recognitionRef.current) {
+      toast.error('이 브라우저는 음성 인식을 지원하지 않습니다.');
+      return;
+    }
+
+    if (isListening) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+    } else {
+      recognitionRef.current.start();
+      setIsListening(true);
+      toast('🎤 듣고 있어요...', { duration: 2000 });
+    }
+  };
+
+  // 메시지 전송
   const handleSendMessage = async (text) => {
     if (!text.trim() || isLoading) return;
 
@@ -183,18 +251,18 @@ const InlineChatPanel = ({ groupId }) => {
 
   return (
     <div className="inline-chat-panel">
-      {/* 헤더 */}
+      {/* 헤더 - 컴팩트 */}
       <div className="chat-panel-header">
         <div className="chat-panel-title">
           <div className="chat-bot-avatar">🤖</div>
           <div>
-            <h4>두레</h4>
-            <span className="chat-status">Online</span>
+            <h4>AI 도우미 두레</h4>
+            <span className="chat-status">● Online</span>
           </div>
         </div>
       </div>
 
-      {/* 메시지 영역 */}
+      {/* 메시지 영역 - 확장 */}
       <div className="chat-messages-area">
         {messages.map((message) => (
           <div 
@@ -249,8 +317,15 @@ const InlineChatPanel = ({ groupId }) => {
         </div>
       )}
 
-      {/* 입력 영역 */}
+      {/* 입력 영역 - 컴팩트 */}
       <div className="chat-input-area">
+        <button 
+          className={`chat-voice-btn ${isListening ? 'listening' : ''}`}
+          onClick={toggleVoiceInput}
+          title="음성 입력"
+        >
+          <Icons.Mic />
+        </button>
         <input
           ref={inputRef}
           type="text"
@@ -449,6 +524,11 @@ const DashboardPage = () => {
     }
   ];
 
+  // 계산된 데이터
+  const targetAmount = dashboardData.totalMembers * (dashboardData.fee || 0);
+  const remainingAmount = targetAmount - (dashboardData.totalAmount || 0);
+  const avgPaymentRate = dashboardData.paymentRate || 0;
+
   return (
     <div className="dashboard-page">
       <div className="dashboard-content">
@@ -469,8 +549,8 @@ const DashboardPage = () => {
               onClick={handleManualRefresh} 
               disabled={isRefreshing}
             >
-              <Icons.Refresh className={`refresh-icon ${isRefreshing ? 'spinning' : ''}`} />
-              새로고침
+              <Icons.Refresh className={isRefreshing ? 'spinning' : ''} />
+              <span>새로고침</span>
             </button>
             {lastUpdated && (
               <span className="last-updated">
@@ -537,7 +617,7 @@ const DashboardPage = () => {
         {/* 4. 하단 그리드 - 상세현황 + 인라인 채팅 */}
         <div className="dashboard-bottom-grid">
           
-          {/* 상세 현황 */}
+          {/* 상세 현황 - 보강됨 */}
           <div className="glass-panel">
             <h3 className="panel-title">📊 상세 현황</h3>
             <div className="status-list">
@@ -548,8 +628,7 @@ const DashboardPage = () => {
                 <div className="status-info">
                   <span className="status-label">총 목표 금액</span>
                   <strong className="status-value">
-                    {(dashboardData.totalMembers * (dashboardData.fee || 0))
-                      ?.toLocaleString() || 0}원
+                    {targetAmount?.toLocaleString() || 0}원
                   </strong>
                 </div>
               </div>
@@ -560,6 +639,28 @@ const DashboardPage = () => {
                 <div className="status-info">
                   <span className="status-label">전체 멤버</span>
                   <strong className="status-value">{dashboardData.totalMembers}명</strong>
+                </div>
+              </div>
+              <div className="status-item">
+                <div className="status-icon status-icon--trending">
+                  <Icons.TrendingUp />
+                </div>
+                <div className="status-info">
+                  <span className="status-label">미수금 잔액</span>
+                  <strong className="status-value status-value--warning">
+                    {remainingAmount > 0 ? remainingAmount.toLocaleString() : 0}원
+                  </strong>
+                </div>
+              </div>
+              <div className="status-item">
+                <div className="status-icon status-icon--calendar">
+                  <Icons.Calendar />
+                </div>
+                <div className="status-info">
+                  <span className="status-label">1인당 회비</span>
+                  <strong className="status-value">
+                    {(dashboardData.fee || 0).toLocaleString()}원
+                  </strong>
                 </div>
               </div>
             </div>
