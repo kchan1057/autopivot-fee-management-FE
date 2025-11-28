@@ -19,6 +19,7 @@
   position: relative;
   overflow: hidden;
   animation: gradientMove 15s ease infinite;
+  padding: 20px;
 }
 
 @keyframes gradientMove {
@@ -27,29 +28,29 @@
   100% { background-position: 0% 50%; }
 }
 
-/* 배경 장식 (블루 블롭) */
+/* 배경 장식 */
 .login-page::before,
 .login-page::after {
   content: '';
   position: absolute;
-  width: 500px;
-  height: 500px;
+  width: 450px;
+  height: 450px;
   border-radius: 50%;
   filter: blur(80px);
   z-index: 0;
-  opacity: 0.6;
+  opacity: 0.5;
   animation: floatBlob 8s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .login-page::before {
   background: #93c5fd;
-  top: -10%;
+  top: -15%;
   left: -10%;
 }
 
 .login-page::after {
   background: #60a5fa;
-  bottom: -10%;
+  bottom: -15%;
   right: -10%;
   animation-delay: -4s;
 }
@@ -59,18 +60,18 @@
   100% { transform: translate(30px, 50px) scale(1.05); }
 }
 
-/* 로그인 박스 (글래스모피즘) */
+/* 로그인 박스 */
 .login-container {
   position: relative;
   z-index: 1;
   width: 100%;
-  max-width: 460px;
-  padding: 3.5rem 2.5rem;
+  max-width: 420px;
+  padding: 2.5rem 2rem;
   background: var(--glass-bg);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--glass-border);
-  border-radius: 32px;
+  border-radius: 28px;
   box-shadow: var(--shadow-soft), 0 0 0 1px rgba(255, 255, 255, 0.5) inset;
   animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -83,43 +84,43 @@
 /* 헤더 및 마스코트 */
 .login-header {
   text-align: center;
-  margin-bottom: 2.5rem;
+  margin-bottom: 2rem;
 }
 
 .login-mascot-container {
   display: flex;
   justify-content: center;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .login-mascot-img {
-  height: 250px; /* 캐릭터 크기 */
+  height: 200px;
   width: auto;
   object-fit: contain;
-  animation: floatMascot 3s ease-in-out infinite alternate; /* 둥둥 떠다니는 효과 */
+  animation: floatMascot 3s ease-in-out infinite alternate;
 }
 
 @keyframes floatMascot {
   0% { transform: translateY(0); }
-  100% { transform: translateY(-12px); }
+  100% { transform: translateY(-10px); }
 }
 
 .login-title {
   font-family: 'Jua', sans-serif;
-  font-size: 48px;
+  font-size: 40px;
   font-weight: 400;
   background: linear-gradient(180deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   letter-spacing: 2px;
-  margin-bottom: 0.75rem;
-  filter: drop-shadow(0 4px 0px #bfdbfe);
+  margin-bottom: 0.5rem;
+  filter: drop-shadow(0 3px 0px #bfdbfe);
   transform: perspective(100px) rotateX(5deg);
 }
 
 .login-subtitle {
-  font-size: 15px;
+  font-size: 14px;
   color: var(--text-sub);
   font-weight: 500;
 }
@@ -128,19 +129,19 @@
 .login-buttons {
   display: flex;
   flex-direction: column;
-  gap: 12px; /* 버튼 사이 간격 */
-  margin-bottom: 2.5rem;
+  gap: 10px;
+  margin-bottom: 2rem;
 }
 
 /* 푸터 */
 .login-footer {
   text-align: center;
-  padding-top: 1.5rem;
+  padding-top: 1.25rem;
   border-top: 2px dashed #f1f5f9;
 }
 
 .login-helper-text {
-  font-size: 13px;
+  font-size: 12px;
   color: #94a3b8;
   line-height: 1.6;
 }
@@ -151,7 +152,7 @@
   inset: 0;
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(4px);
-  border-radius: 32px;
+  border-radius: 28px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -161,8 +162,8 @@
 }
 
 .login-loading-spinner {
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border: 3px solid #e2e8f0;
   border-top-color: var(--primary-color);
   border-radius: 50%;
@@ -170,8 +171,8 @@
 }
 
 .login-loading-text {
-  margin-top: 16px;
-  font-size: 14px;
+  margin-top: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--text-main);
 }
@@ -179,11 +180,13 @@
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 
+/* 모달 스타일 */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -199,33 +202,33 @@
 .modal-content {
   background: white;
   border-radius: 20px;
-  padding: 32px;
-  max-width: 400px;
+  padding: 28px;
+  max-width: 380px;
   width: 90%;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
   animation: slideUp 0.3s ease;
 }
 
 .modal-title {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
   color: #1e293b;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .modal-buttons {
   display: flex;
-  gap: 12px;
-  margin-top: 24px;
+  gap: 10px;
+  margin-top: 20px;
 }
 
 .btn-cancel {
   flex: 1;
-  padding: 14px 20px;
+  padding: 12px 18px;
   border: 1px solid #e2e8f0;
   background: white;
-  border-radius: 12px;
-  font-size: 15px;
+  border-radius: 10px;
+  font-size: 14px;
   font-weight: 600;
   color: #64748b;
   cursor: pointer;
@@ -239,11 +242,11 @@
 
 .btn-submit {
   flex: 1;
-  padding: 14px 20px;
+  padding: 12px 18px;
   border: none;
   background: linear-gradient(135deg, #3b82f6, #2563eb);
-  border-radius: 12px;
-  font-size: 15px;
+  border-radius: 10px;
+  font-size: 14px;
   font-weight: 600;
   color: white;
   cursor: pointer;
@@ -261,14 +264,14 @@
 }
 
 .delete-modal__icon {
-  font-size: 48px;
-  margin-bottom: 16px;
+  font-size: 44px;
+  margin-bottom: 14px;
 }
 
 .delete-modal__message {
   color: #374151;
-  font-size: 16px;
-  margin-bottom: 8px;
+  font-size: 15px;
+  margin-bottom: 6px;
 }
 
 .delete-modal__message strong {
@@ -277,18 +280,18 @@
 
 .delete-modal__warning {
   color: #9ca3af;
-  font-size: 14px;
-  margin-bottom: 24px;
+  font-size: 13px;
+  margin-bottom: 20px;
   line-height: 1.5;
 }
 
 .btn-delete {
   flex: 1;
-  padding: 14px 20px;
+  padding: 12px 18px;
   border: none;
   background: linear-gradient(135deg, #ef4444, #dc2626);
-  border-radius: 12px;
-  font-size: 15px;
+  border-radius: 10px;
+  font-size: 14px;
   font-weight: 600;
   color: white;
   cursor: pointer;
@@ -306,18 +309,17 @@
   transform: none;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes slideUp {
-  from { 
-    opacity: 0; 
-    transform: translateY(20px); 
+/* 반응형 */
+@media (max-width: 480px) {
+  .login-container {
+    padding: 2rem 1.5rem;
   }
-  to { 
-    opacity: 1; 
-    transform: translateY(0); 
+  
+  .login-mascot-img {
+    height: 160px;
+  }
+  
+  .login-title {
+    font-size: 32px;
   }
 }

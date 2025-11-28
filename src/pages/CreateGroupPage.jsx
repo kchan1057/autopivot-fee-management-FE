@@ -25,7 +25,7 @@ const CreateGroupPage = () => {
 
   // 모달 상태들
   const [showSkipModal, setShowSkipModal] = useState(false);
-  const [showFormatModal, setShowFormatModal] = useState(false); // 엑셀 양식 안내 모달
+  const [showFormatModal, setShowFormatModal] = useState(false);
 
   const groupCategories = [
     { value: 'CLUB', label: '동아리' },
@@ -234,6 +234,14 @@ const CreateGroupPage = () => {
           {/* Step 1: 그룹 기본 정보 */}
           {currentStep === 1 && (
             <div className="form-step">
+              {/* ✨ 안내 배너 추가 */}
+              <div className="info-banner">
+                <span className="info-banner-icon">✏️</span>
+                <p className="info-banner-text">
+                  걱정 마세요! 모든 정보는 그룹 생성 후에도 <strong>언제든 수정</strong>할 수 있어요.
+                </p>
+              </div>
+
               <div className="form-section">
                 <h3 className="form-section-title">기본 정보</h3>
 
