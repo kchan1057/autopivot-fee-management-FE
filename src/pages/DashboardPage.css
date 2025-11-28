@@ -154,9 +154,9 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 5px;
   padding: 8px 14px;
-  height: 38px;
+  height: 36px;
   background: white;
   border: 1px solid var(--slate-200);
   border-radius: var(--radius-md);
@@ -166,14 +166,17 @@ body {
   cursor: pointer;
   transition: all 0.2s;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  white-space: nowrap;
 }
 
 .refresh-btn svg {
   flex-shrink: 0;
+  width: 14px;
+  height: 14px;
 }
 
 .refresh-btn span {
-  white-space: nowrap;
+  line-height: 1;
 }
 
 .refresh-btn:hover:not(:disabled) {
