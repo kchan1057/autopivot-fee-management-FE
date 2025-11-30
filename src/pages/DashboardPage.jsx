@@ -3,11 +3,6 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import './DashboardPage.css';
 
-// ✨ groupId 유효성 검증
-const isValidGroupId = (groupId) => {
-  return groupId && groupId !== 'undefined' && groupId !== 'null';
-};
-
 // 🎨 SVG 아이콘 컴포넌트
 const Icons = {
   Refresh: ({ className }) => (
@@ -88,21 +83,18 @@ const Icons = {
     </svg>
   ),
 
-  // ✅ 새로 추가: 플레이 (수금 시작)
   Play: () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <polygon points="5 3 19 12 5 21 5 3"/>
     </svg>
   ),
 
-  // ✅ 새로 추가: 정지 (수금 종료)
   Square: () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
     </svg>
   ),
 
-  // ✅ 새로 추가: X (닫기)
   X: () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <line x1="18" y1="6" x2="6" y2="18"/>
@@ -110,7 +102,6 @@ const Icons = {
     </svg>
   ),
 
-  // ✅ 새로 추가: 체크
   Check: () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <polyline points="20 6 9 17 4 12"/>
@@ -135,7 +126,6 @@ const InlineChatPanel = ({ groupId }) => {
   const inputRef = useRef(null);
   const recognitionRef = useRef(null);
 
-  // 추천 질문
   const quickQuestions = [
     { text: '미납자 현황', icon: '📋' },
     { text: '이번 달 회비', icon: '💰' },
@@ -150,7 +140,6 @@ const InlineChatPanel = ({ groupId }) => {
     scrollToBottom();
   }, [messages, isLoading]);
 
-  // 🎤 음성 인식 초기화
   useEffect(() => {
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -176,7 +165,6 @@ const InlineChatPanel = ({ groupId }) => {
     }
   }, []);
 
-  // 🎤 음성 인식 토글
   const toggleVoiceInput = () => {
     if (!recognitionRef.current) {
       toast.error('이 브라우저는 음성 인식을 지원하지 않습니다.');
@@ -193,9 +181,8 @@ const InlineChatPanel = ({ groupId }) => {
     }
   };
 
-  // 메시지 전송
   const handleSendMessage = async (text) => {
-    if (!text.trim() || isLoading) return;
+    if (!text.trim() || isLoading || !groupId) return;
 
     const userMessage = {
       id: Date.now(),
@@ -348,8 +335,9 @@ const DashboardPage = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(null);
   const [userName, setUserName] = useState('');
+  const [currentGroupId, setCurrentGroupId] = useState(null);
 
-  // ✅ 새로 추가: 수금 기간 관련 상태
+  // 수금 기간 관련 상태
   const [activeCycle, setActiveCycle] = useState(null);
   const [isStartModalOpen, setIsStartModalOpen] = useState(false);
   const [isEndModalOpen, setIsEndModalOpen] = useState(false);
@@ -359,20 +347,17 @@ const DashboardPage = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // 사용자 이름 가져오기
+  // ✅ 1단계: 토큰 및 groupId 초기화 (최초 1회)
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
+    
+    // 토큰 없으면 로그인으로
     if (!token) {
-      navigate('/login');
+      navigate('/login', { replace: true });
       return;
     }
 
-    // URL에서 groupId 처리
-    const groupIdFromUrl = searchParams.get('groupId');
-    if (groupIdFromUrl) {
-      localStorage.setItem('currentGroupId', groupIdFromUrl);
-    }
-
+    // 사용자 이름 파싱
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
       setUserName(payload.name || '회원');
@@ -380,14 +365,36 @@ const DashboardPage = () => {
       console.error('토큰 파싱 실패:', error);
       setUserName('회원');
     }
+
+    // groupId 결정: URL 파라미터 > localStorage
+    const groupIdFromUrl = searchParams.get('groupId');
+    const groupIdFromStorage = localStorage.getItem('currentGroupId');
+    
+    let finalGroupId = null;
+    
+    if (groupIdFromUrl && groupIdFromUrl !== 'undefined' && groupIdFromUrl !== 'null') {
+      finalGroupId = groupIdFromUrl;
+      localStorage.setItem('currentGroupId', groupIdFromUrl);
+    } else if (groupIdFromStorage && groupIdFromStorage !== 'undefined' && groupIdFromStorage !== 'null') {
+      finalGroupId = groupIdFromStorage;
+    }
+
+    // groupId가 없으면 그룹 선택 페이지로
+    if (!finalGroupId) {
+      console.log('No valid groupId found, redirecting to select-group');
+      navigate('/select-group', { replace: true });
+      return;
+    }
+
+    console.log('Using groupId:', finalGroupId);
+    setCurrentGroupId(finalGroupId);
   }, [navigate, searchParams]);
 
-  // ✅ 새로 추가: 수금 기간 조회
-  const fetchActiveCycle = useCallback(async () => {
+  // ✅ 2단계: groupId가 설정된 후 데이터 로드
+  const fetchActiveCycle = useCallback(async (groupId) => {
+    if (!groupId) return;
+    
     try {
-      const groupId = localStorage.getItem('currentGroupId');
-      if (!isValidGroupId(groupId)) return;
-
       const response = await fetch(
         `https://seongchan-spring.store/api/groups/${groupId}/payment-cycles/active`,
         {
@@ -397,27 +404,29 @@ const DashboardPage = () => {
         }
       );
 
-      if (!response.ok) throw new Error('수금 기간 조회 실패');
+      if (!response.ok) {
+        // 404면 활성 사이클 없음 - 정상
+        if (response.status === 404) {
+          setActiveCycle({ hasActiveCycle: false });
+          return;
+        }
+        throw new Error('수금 기간 조회 실패');
+      }
 
       const data = await response.json();
       setActiveCycle(data);
     } catch (error) {
       console.error('수금 기간 조회 오류:', error);
+      setActiveCycle({ hasActiveCycle: false });
     }
   }, []);
 
-  // 대시보드 데이터 가져오기
-  const fetchDashboardData = useCallback(async (showLoading = true) => {
+  const fetchDashboardData = useCallback(async (groupId, showLoading = true) => {
+    if (!groupId) return;
+    
     try {
       if (showLoading) setIsLoading(true);
       else setIsRefreshing(true);
-      
-      const groupId = localStorage.getItem('currentGroupId');
-      
-      if (!isValidGroupId(groupId)) {
-        navigate('/select-group', { replace: true });
-        return;
-      }
       
       const response = await fetch(
         `https://seongchan-spring.store/api/groups/${groupId}/dashboard`, 
@@ -428,14 +437,26 @@ const DashboardPage = () => {
         }
       );
 
-      if (!response.ok) throw new Error('데이터 로딩 실패');
+      if (!response.ok) {
+        if (response.status === 401) {
+          localStorage.removeItem('accessToken');
+          navigate('/login', { replace: true });
+          return;
+        }
+        if (response.status === 403 || response.status === 404) {
+          localStorage.removeItem('currentGroupId');
+          navigate('/select-group', { replace: true });
+          return;
+        }
+        throw new Error('데이터 로딩 실패');
+      }
 
       const data = await response.json();
       setDashboardData(data);
       setLastUpdated(new Date(data.lastUpdated));
       
       // 수금 기간도 함께 조회
-      await fetchActiveCycle();
+      await fetchActiveCycle(groupId);
       
     } catch (error) {
       console.error('데이터 로딩 오류:', error);
@@ -446,33 +467,27 @@ const DashboardPage = () => {
     }
   }, [navigate, fetchActiveCycle]);
 
-  // 초기 데이터 로드
+  // ✅ currentGroupId가 설정되면 데이터 로드
   useEffect(() => {
-    const token = localStorage.getItem('accessToken');
-    const groupId = localStorage.getItem('currentGroupId');
-    
-    if (token && isValidGroupId(groupId)) {
-      fetchDashboardData(true);
+    if (currentGroupId) {
+      fetchDashboardData(currentGroupId, true);
     }
-  }, [fetchDashboardData]);
+  }, [currentGroupId, fetchDashboardData]);
 
   // 자동 새로고침 (60초)
   useEffect(() => {
+    if (!currentGroupId) return;
+    
     const interval = setInterval(() => {
-      const groupId = localStorage.getItem('currentGroupId');
-      if (isValidGroupId(groupId)) {
-        fetchDashboardData(false);
-      }
+      fetchDashboardData(currentGroupId, false);
     }, 60000);
     
     return () => clearInterval(interval);
-  }, [fetchDashboardData]);
+  }, [currentGroupId, fetchDashboardData]);
 
   // 수동 새로고침
   const handleManualRefresh = async () => {
-    const groupId = localStorage.getItem('currentGroupId');
-    
-    if (!isValidGroupId(groupId)) {
+    if (!currentGroupId) {
       toast.error('그룹을 먼저 선택해주세요.');
       navigate('/select-group');
       return;
@@ -483,7 +498,7 @@ const DashboardPage = () => {
     try {
       setIsRefreshing(true);
       await fetch(
-        `https://seongchan-spring.store/api/groups/${groupId}/dashboard/refresh`, 
+        `https://seongchan-spring.store/api/groups/${currentGroupId}/dashboard/refresh`, 
         {
           method: 'POST',
           headers: { 
@@ -491,7 +506,7 @@ const DashboardPage = () => {
           }
         }
       );
-      await fetchDashboardData(false);
+      await fetchDashboardData(currentGroupId, false);
       toast.success('새로고침 완료!', { id: loadingToast });
     } catch (error) {
       console.error('새로고침 오류:', error);
@@ -501,7 +516,7 @@ const DashboardPage = () => {
     }
   };
 
-  // ✅ 새로 추가: 수금 시작 모달 열기
+  // 수금 시작 모달 열기
   const openStartModal = () => {
     const now = new Date();
     const year = now.getFullYear();
@@ -515,7 +530,7 @@ const DashboardPage = () => {
     setIsStartModalOpen(true);
   };
 
-  // ✅ 새로 추가: 수금 시작 처리
+  // 수금 시작 처리
   const handleStartCycle = async () => {
     if (!cycleForm.period || !cycleForm.dueDate) {
       toast.error('모든 항목을 입력해주세요.');
@@ -525,10 +540,8 @@ const DashboardPage = () => {
     setIsSubmitting(true);
 
     try {
-      const groupId = localStorage.getItem('currentGroupId');
-      
       const response = await fetch(
-        `https://seongchan-spring.store/api/groups/${groupId}/payment-cycles/start`,
+        `https://seongchan-spring.store/api/groups/${currentGroupId}/payment-cycles/start`,
         {
           method: 'POST',
           headers: {
@@ -549,7 +562,7 @@ const DashboardPage = () => {
 
       toast.success('회비 수금이 시작되었습니다!');
       setIsStartModalOpen(false);
-      await fetchDashboardData(false);
+      await fetchDashboardData(currentGroupId, false);
       
     } catch (error) {
       console.error('수금 시작 오류:', error);
@@ -559,17 +572,15 @@ const DashboardPage = () => {
     }
   };
 
-  // ✅ 새로 추가: 수금 종료 처리
+  // 수금 종료 처리
   const handleEndCycle = async () => {
     if (!activeCycle?.cycleId) return;
 
     setIsSubmitting(true);
 
     try {
-      const groupId = localStorage.getItem('currentGroupId');
-      
       const response = await fetch(
-        `https://seongchan-spring.store/api/groups/${groupId}/payment-cycles/${activeCycle.cycleId}/close`,
+        `https://seongchan-spring.store/api/groups/${currentGroupId}/payment-cycles/${activeCycle.cycleId}/close`,
         {
           method: 'POST',
           headers: {
@@ -582,7 +593,7 @@ const DashboardPage = () => {
 
       toast.success('회비 수금이 종료되었습니다.');
       setIsEndModalOpen(false);
-      await fetchDashboardData(false);
+      await fetchDashboardData(currentGroupId, false);
       
     } catch (error) {
       console.error('수금 종료 오류:', error);
@@ -590,6 +601,13 @@ const DashboardPage = () => {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  // 기간 포맷
+  const formatPeriod = (period) => {
+    if (!period) return '';
+    const [year, month] = period.split('-');
+    return `${year}년 ${parseInt(month)}월`;
   };
 
   // 로딩 화면
@@ -633,13 +651,6 @@ const DashboardPage = () => {
   const targetAmount = dashboardData.totalMembers * (dashboardData.fee || 0);
   const remainingAmount = targetAmount - (dashboardData.totalAmount || 0);
 
-  // 기간 포맷 (2025-01 → 2025년 1월)
-  const formatPeriod = (period) => {
-    if (!period) return '';
-    const [year, month] = period.split('-');
-    return `${year}년 ${parseInt(month)}월`;
-  };
-
   return (
     <div className="dashboard-page">
       <div className="dashboard-content">
@@ -674,12 +685,11 @@ const DashboardPage = () => {
           </div>
         </div>
 
-        {/* 2. 히어로 카드 - 수금 상태 표시 추가 */}
+        {/* 2. 히어로 카드 */}
         <div className="hero-card">
           <div className="hero-header">
             <span className="hero-title">이번 달 회비 납부율</span>
             
-            {/* ✅ 수금 상태 배지 */}
             {activeCycle?.hasActiveCycle ? (
               <span className="cycle-badge cycle-badge--active">
                 🟢 수금 진행 중
@@ -702,7 +712,6 @@ const DashboardPage = () => {
               ></div>
             </div>
             
-            {/* ✅ 수금 기간 정보 또는 시작 버튼 */}
             {activeCycle?.hasActiveCycle ? (
               <>
                 <div className="cycle-info">
@@ -772,10 +781,10 @@ const DashboardPage = () => {
           ))}
         </div>
 
-        {/* 4. 하단 그리드 - 상세현황 + 인라인 채팅 */}
+        {/* 4. 하단 그리드 */}
         <div className="dashboard-bottom-grid">
           
-          {/* 상세 현황 - 보강됨 */}
+          {/* 상세 현황 */}
           <div className="glass-panel">
             <h3 className="panel-title">📊 상세 현황</h3>
             <div className="status-list">
@@ -829,13 +838,13 @@ const DashboardPage = () => {
             </div>
           </div>
 
-          {/* 🤖 인라인 채팅 패널 */}
-          <InlineChatPanel groupId={localStorage.getItem('currentGroupId')} />
+          {/* 인라인 채팅 패널 */}
+          <InlineChatPanel groupId={currentGroupId} />
 
         </div>
       </div>
 
-      {/* ✅ 수금 시작 모달 */}
+      {/* 수금 시작 모달 */}
       {isStartModalOpen && (
         <div className="modal-overlay" onClick={() => setIsStartModalOpen(false)}>
           <div className="modal-content cycle-modal" onClick={e => e.stopPropagation()}>
@@ -907,7 +916,7 @@ const DashboardPage = () => {
         </div>
       )}
 
-      {/* ✅ 수금 종료 모달 */}
+      {/* 수금 종료 모달 */}
       {isEndModalOpen && (
         <div className="modal-overlay" onClick={() => setIsEndModalOpen(false)}>
           <div className="modal-content cycle-modal" onClick={e => e.stopPropagation()}>
