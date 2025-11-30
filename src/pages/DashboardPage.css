@@ -1271,3 +1271,58 @@
     width: 95%;
   }
 }
+
+/* 1. quick-actions-grid를 4열로 변경 (기존 코드 수정) */
+.quick-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);  /* 3 → 4로 변경 */
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+/* 2. 다운로드 버튼 특별 스타일 추가 (새로 추가) */
+.action-card--download .action-icon {
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  color: #059669;
+}
+
+.action-card--download:hover {
+  border-color: #10b981;
+  box-shadow: 0 10px 20px rgba(16, 185, 129, 0.15);
+}
+
+/* 3. 모바일 반응형 수정 (기존 @media 내용 수정) */
+@media (max-width: 768px) {
+  .quick-actions-grid {
+    grid-template-columns: repeat(4, 1fr);  /* 4열 유지 */
+    gap: var(--space-sm);
+  }
+  
+  .action-card {
+    padding: var(--space-sm);
+    min-height: 100px;
+  }
+  
+  .action-icon {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .action-title {
+    font-size: 12px;
+  }
+  
+  .action-desc {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .quick-actions-grid {
+    grid-template-columns: repeat(2, 1fr);  /* 작은 화면에서 2열 */
+  }
+  
+  .action-card {
+    min-height: 90px;
+  }
+}

@@ -35,6 +35,15 @@ const Icons = {
       <circle cx="12" cy="12" r="3"/>
     </svg>
   ),
+
+  // ✅ 다운로드 아이콘 추가
+  Download: () => (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+      <polyline points="7 10 12 15 17 10"/>
+      <line x1="12" x2="12" y1="15" y2="3"/>
+    </svg>
+  ),
   
   Coins: () => (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -461,8 +470,6 @@ const DashboardPage = () => {
       }
 
       const data = await response.json();
-      console.log('📊 Dashboard API 응답:', data);  // 디버깅용
-      console.log('📊 fee:', data.fee, 'totalMembers:', data.totalMembers);  // 디버깅용
       setDashboardData(data);
       setLastUpdated(new Date(data.lastUpdated));
       
@@ -525,6 +532,17 @@ const DashboardPage = () => {
     } finally {
       setIsRefreshing(false);
     }
+  };
+
+  // ✅ APK 다운로드 핸들러
+  const handleAppDownload = () => {
+    const link = document.createElement('a');
+    link.href = '/downloads/AutoFeeBot.apk';
+    link.download = 'AutoFeeBot.apk';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success('앱 다운로드가 시작됩니다!');
   };
 
   // 수금 시작 모달 열기
@@ -633,7 +651,7 @@ const DashboardPage = () => {
     );
   }
 
-  // 빠른 실행 메뉴
+  // ✅ 빠른 실행 메뉴 (앱 다운로드 추가)
   const quickActions = [
     { 
       id: 'fees', 
@@ -655,15 +673,19 @@ const DashboardPage = () => {
       title: '그룹 설정',
       desc: '그룹 정보 수정',
       path: '/group-settings'
+    },
+    { 
+      id: 'appDownload',
+      icon: <Icons.Download />,
+      title: '앱 다운로드',
+      desc: 'Android 앱 설치',
+      isDownload: true
     }
   ];
 
-  // 계산된 데이터 - API 필드명 호환성 처리
-  const monthlyFee = dashboardData.fee || dashboardData.monthlyFee || 0;
-  const memberCount = dashboardData.totalMembers || 0;
-  const targetAmount = memberCount * monthlyFee;
-  const collectedAmount = dashboardData.totalAmount || dashboardData.paidAmount || 0;
-  const remainingAmount = targetAmount - collectedAmount;
+  // 계산된 데이터
+  const targetAmount = dashboardData.totalMembers * (dashboardData.fee || 0);
+  const remainingAmount = targetAmount - (dashboardData.totalAmount || 0);
 
   return (
     <div className="dashboard-page">
@@ -778,13 +800,19 @@ const DashboardPage = () => {
           </div>
         </div>
 
-        {/* 3. 빠른 실행 */}
+        {/* 3. 빠른 실행 (4개로 변경) */}
         <div className="quick-actions-grid">
           {quickActions.map((action) => (
             <div 
               key={action.id} 
-              className="action-card"
-              onClick={() => navigate(action.path)}
+              className={`action-card ${action.isDownload ? 'action-card--download' : ''}`}
+              onClick={() => {
+                if (action.isDownload) {
+                  handleAppDownload();
+                } else {
+                  navigate(action.path);
+                }
+              }}
             >
               <span className="action-icon">{action.icon}</span>
               <div className="action-text">
@@ -863,7 +891,7 @@ const DashboardPage = () => {
         <div className="modal-overlay" onClick={() => setIsStartModalOpen(false)}>
           <div className="modal-content cycle-modal" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
-              <h3>🚀 회비 수금 시작</h3>
+              <h3>회비 수금 시작</h3>
               <button className="modal-close" onClick={() => setIsStartModalOpen(false)}>
                 <Icons.X />
               </button>
@@ -890,15 +918,15 @@ const DashboardPage = () => {
               
               <div className="cycle-summary">
                 <div className="summary-item">
-                  <span className="summary-label">📋 대상 멤버</span>
+                  <span className="summary-label">대상 멤버</span>
                   <span className="summary-value">{dashboardData.totalMembers}명</span>
                 </div>
                 <div className="summary-item">
-                  <span className="summary-label">💰 1인당 회비</span>
+                  <span className="summary-label">1인당 회비</span>
                   <span className="summary-value">{(dashboardData.fee || 0).toLocaleString()}원</span>
                 </div>
                 <div className="summary-item summary-item--highlight">
-                  <span className="summary-label">🎯 목표 금액</span>
+                  <span className="summary-label">목표 금액</span>
                   <span className="summary-value">
                     {(dashboardData.totalMembers * (dashboardData.fee || 0)).toLocaleString()}원
                   </span>
@@ -906,8 +934,7 @@ const DashboardPage = () => {
               </div>
               
               <div className="info-box">
-                <p>💡 수금을 시작하면 모든 멤버에게 납부 대기 상태가 생성되고,<br/>
-                입금 알림이 자동으로 매칭됩니다.</p>
+                <p>💡 수금을 시작하면 모든 멤버에게 납부 대기 상태가 생성되고, 입금 알림이 자동으로 매칭됩니다.</p>
               </div>
             </div>
             
@@ -991,3 +1018,4 @@ const DashboardPage = () => {
 };
 
 export default DashboardPage;
+
